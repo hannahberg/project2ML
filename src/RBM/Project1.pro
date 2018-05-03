@@ -15,8 +15,6 @@ SOURCES += impsamp.cpp
 HEADERS += impsamp.h
 SOURCES += interact.cpp
 HEADERS += interact.h
-SOURCES += gibbs.cpp
-HEADERS += gibbs.h
 #HEADERS += catch.hpp
 
 LIBS += -larmadillo -llapack -lblas
