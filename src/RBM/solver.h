@@ -40,6 +40,17 @@ public:
     mat F(const mat &R_, double alpha_);
     double energy_real(const mat &R, double alpha); //
 
+    double u(double bj, const vec &X, const mat &wj);
+
+    double grad_ai(double Xi,double ai, double sigma2);
+
+    double grad_bj(double bj, const vec &X, const mat &wj);
+
+    double grad_wij(double Xi, double sigma2, double bj, const vec &X, double wj);
+
+
+
+
 private:
 };
 #endif

@@ -194,3 +194,29 @@ double Solver::energy_real(const mat &R, double alpha){ //done optimization
 
 }
 
+double Solver::u(double bj, const vec &X, const mat &wj){
+    double sum = 0;
+    for(int i = 0; i < M; i++){
+        sum += X(i)*wj(i);
+    }
+    return bj + sum;
+}
+
+double Solver::grad_ai(double Xi,double ai, double sigma2){
+    return (Xi - ai)/sigma2;
+}
+
+double Solver::grad_bj(double bj, const vec &X, const mat &wj){
+    double uj = u(bj,X,wj);
+    return 1/(1+exp(-uj));
+}
+
+double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, double wj){
+   return Xi*sigma2*grad_bj(bj, X, &wj);
+}
+
+
+
+
+
+
