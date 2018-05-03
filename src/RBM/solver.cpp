@@ -10,9 +10,9 @@ Solver::Solver(double s_beta,
                int s_N,
                int s_dim,
                double s_h,
-               double s_dt
-               double sig
-               double s_M
+               double s_dt,
+               double sig,
+               double s_M,
                double s_H){
     beta = s_beta;
     hbar = s_hbar;
@@ -37,7 +37,7 @@ vec Solver::init_a(){
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,0.001);
     vec a = zeros(M);
-    for(int i>0; i=M; i++){
+    for(int i=0; i<M; i++){
         a(i) = gaussianRNG(genMT64);
     }
     return a;
@@ -48,7 +48,7 @@ vec Solver::init_b(){
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,0.001);
     vec b = zeros(H);
-    for(int i>0; i=H; i++){
+    for(int i=0; i<H; i++){
         b(i) = gaussianRNG(genMT64);
     }
     return b;
@@ -59,11 +59,12 @@ mat Solver::init_w(){
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,0.001);
     mat w = zeros(M,H);
-    for(int i>0; i=M; i++){
-        for(int j>0; j=H; i++){
+    for(int i=0; i<M; i++){
+        for(int j=0; j<H; i++){
             w(i,j) = gaussianRNG(genMT64);
     }
     return w;
+}
 }
 
 vec Solver::init_X(){
@@ -71,42 +72,33 @@ vec Solver::init_X(){
     mt19937_64 genMT64(rd());
     uniform_real_distribution<double> doubleRNG(-0.5,0.5);
     vec X = zeros(H);
-    for(int i>0; i=H; i++){
+    for(int i=0; i<H; i++){
         X(i) = doubleRNG(genMT64);
     }
-    return b;
+    return X;
 
 }
 
-double Solver::wavefunc(const mat &R, double alpha_){
+double Solver::wavefunc(vec a, vec b, mat w, vec X){
     //bool interact = y/n ??
     int i; int j;
     double g = 0;
-
+    double f = 1;
         for(i=0;i<N;i++){
             for(int l=i+1;l<N;l++){
                 if(i!=l){
                     f*=(1 + exp(b(j) + (X(i)*(w(i,j)/(sigma*sigma)))));
                 for(j=0;j<dim;j++){
-                    //if(j==2){
-                    //    g += beta*beta*newR(i,j)*newR(i,j);
-                    //} else{
-                        g += pow((X(i) - a(i)),2)/(2*sigma*sigma)
+                        g += pow((X(i) - a(i)),2)/(2*sigma*sigma);
                     }
                 }
             }
-            }
         }
 
-
-    double psi = exp(-alpha_*g)*f;
+    double psi = exp(g)*f;
     return psi;
-
-
-
-
-
 }
+
 
 double Solver::d_wavefunc(const mat &R, double alpha_){
     //bool interact = y/n ??
