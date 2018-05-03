@@ -147,7 +147,39 @@ double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, doubl
 }
 
 
+double Solver::E_L(){
+    double energysum = 0;
+    double r2 = 0;
+    double temp_I = 0;
+    double u_ = 0
+    double sigma2_ = 1/(sigma*sigma);
+    double I = 0;
+    double II = 0;
+    double temp_II = 0;
+    double eu = 0;
+    double u_ = 0;
+    double wmj = 0;
+    double Xm = 0;
+    for(int m = 0; m < M; m++){
+        Xm = X(m);
+        I = -(Xm-a(m));
+        r2 += Xm*Xm;
+        temp_I = 0;
+        temp_II = 0;
+        II = 0;
+        for(int j = 0; j < N; j++){
+            wmj = w(m,j);
+            u_ = u(b(j), X, w.row(m));
+            eu = exp(u_);
+            temp_I += wmj/(1+1/eu);
+            temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
+        }
+        II = sigma2_*sigma2_*temp_II;
+        I *= I + sigma2_*temp_I;
+        energysum += I+II;
+    }
+    return -0.5*(energysum - M*sigma2_) + 0.5*r2*omega*omega;
 
-
+}
 
 
