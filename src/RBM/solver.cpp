@@ -12,7 +12,8 @@ Solver::Solver(double s_beta,
                double s_h,
                double s_dt
                double sig
-               double s_M){
+               double s_M
+               double s_H){
     beta = s_beta;
     hbar = s_hbar;
     m = mass;
@@ -28,6 +29,7 @@ Solver::Solver(double s_beta,
     dt = s_dt;
     sigma = sig;
     M = s_M;
+    H = s_H;
 }
 
 vec Solver::init_a(){

@@ -20,8 +20,9 @@ int main(){
     double hbar = 1;
     double mass = 1;
     double omega = 1;
-    double sigma = 1;
+    double sig = 1;
     double numM = howmanyDs*numpart;
+    double hidden = 3;
 
     ofstream myfile;
     //myfile.open("interaction_N10.dat");
@@ -29,7 +30,7 @@ int main(){
     //    if(alphavec(elem) != 0.5){
         double alpha = 0.5;
     double dt = 0.01;//dtvec(elem);
-    Solver S(beta, hbar, mass, omega, alpha, rho, mc, numpart, howmanyDs, h, dt, sig, numM); // initialize Solver class
+    Solver S(beta, hbar, mass, omega, alpha, rho, mc, numpart, howmanyDs, h, dt, sig, numM, hidden); // initialize Solver class
     Bruteforce* B = new Bruteforce(beta, hbar, mass, omega, alpha, rho, mc, numpart, howmanyDs, h, dt);
     Impsamp* Imp = new Impsamp(beta, hbar, mass, omega, alpha, rho, mc, numpart, howmanyDs, h, dt);
     Interact* Int = new Interact(beta, hbar, mass, omega, alpha, rho, mc, numpart, howmanyDs, h, dt);
