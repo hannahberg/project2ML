@@ -42,13 +42,38 @@ vec Solver::init_a(){
 }
 
 vec Solver::init_b(){
-
+    static random_device rd;
+    static mt19937_64 genMT64(rd());
+    static normal_distribution<double> gaussianRNG(0,0.001);
+    vec b = zeros(H);
+    for(int i>0; i=H; i++){
+        b(i) = gaussianRNG(genMT64);
+    }
     return b;
 }
 
 mat Solver::init_w(){
-
+    static random_device rd;
+    static mt19937_64 genMT64(rd());
+    static normal_distribution<double> gaussianRNG(0,0.001);
+    mat w = zeros(M,H);
+    for(int i>0; i=M; i++){
+        for(int j>0; j=H; i++){
+            w(i,j) = gaussianRNG(genMT64);
+    }
     return w;
+}
+
+vec Solver::init_X(){
+    random_device rd;
+    mt19937_64 genMT64(rd());
+    uniform_real_distribution<double> doubleRNG(-0.5,0.5);
+    vec X = zeros(H);
+    for(int i>0; i=H; i++){
+        X(i) = doubleRNG(genMT64);
+    }
+    return b;
+
 }
 
 double Solver::wavefunc(const mat &R, double alpha_){
