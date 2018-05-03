@@ -6,7 +6,7 @@ class Interact : public Solver{
 public:
     double a;
     double binsize;
-    Interact(double s_beta, double s_hbar, double mass, double s_omega, double s_alpha, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt);
+    Interact(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt);
     mat init_pos_interact();
     mat too_close(mat Rtull);
     double wavefunc_interact(mat R, double alphanow);

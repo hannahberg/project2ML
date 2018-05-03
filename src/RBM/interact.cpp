@@ -1,11 +1,9 @@
 #include "interact.h"
 #include "solver.h"
 
-Interact::Interact(double s_beta,
-                   double s_hbar,
+Interact::Interact(double s_hbar,
                    double mass,
                    double s_omega,
-                   double s_alpha,
                    double s_rho,
                    int s_mc,
                    int s_N,
@@ -14,7 +12,7 @@ Interact::Interact(double s_beta,
                    double s_dt)
 :
     Solver(s_beta, s_hbar, mass,s_omega, s_alpha, s_rho, s_mc, s_N, s_dim, s_h, s_dt)
-{a = 0.0;binsize = 0.0032;}
+{binsize = 0.0032;}
 
 mat Interact::init_pos_interact(){
     mat position = init_pos_gaus();
