@@ -14,7 +14,7 @@ using namespace arma;
 class Solver{
 public:
     clock_t start, end;
-    Solver(double s_beta, double s_hbar, double mass, double s_omega, double s_alpha, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt, double sig);
+    Solver(double s_beta, double s_hbar, double mass, double s_omega, double s_alpha, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt, double sig, double s_H, double s_M);
     double beta;
     double hbar;
     int N; //number of particles
@@ -27,18 +27,25 @@ public:
     double h;
     double h2;
     double dt;
+    double sigma;
+    double M;
+    double H;
     int mc; //num MC cycles
     int dim;
     double rho; //position update parameter
 
     // functions in class
-    double wavefunc(const mat &R, double alpha_);
+    double wavefunc(vec a, vec b, mat w, vec X);
     double d_wavefunc(const mat &R, double alpha_);
     mat init_pos_gaus();
     mat distance_part(const mat &R);
     double energy_num(const mat &R, double alpha);
     mat F(const mat &R_, double alpha_);
     double energy_real(const mat &R, double alpha); //
+    vec init_a();
+    vec init_b();
+    vec init_X();
+    mat init_w();
 
 private:
 };
