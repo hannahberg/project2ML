@@ -17,12 +17,12 @@ Bruteforce::Bruteforce(
     Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt)
 {}
 
-double Bruteforce::energy_local(){
+double Bruteforce::energy_analytic(){
     return 0.5 * N * dim;
 }
 
 void Bruteforce::solve(std::ofstream &myfile, ofstream &myfile2){
-    double energy = energy_local();
+    double energy = energy_analytic();
     myfile << "# dim = " << dim << ", N = " << N << ", dt = " << dt << " and mc = " << mc << endl << endl;
     myfile << scientific << "# Theoretical Energy = " << energy << endl << endl;
 
