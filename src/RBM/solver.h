@@ -46,7 +46,7 @@ public:
 
     double u(double bj, const vec &X, const mat &wj);
 
-    double grad_ai(double Xi,double ai, double sigma2);
+    double grad_ai(const vec &X,const vec &a);
 
     double grad_bj(double bj, const vec &X, const mat &wj);
 

@@ -126,8 +126,12 @@ double Solver::u(double bj, const vec &X, const mat &wj){
     return bj + sum;
 }
 
-double Solver::grad_ai(double Xi,double ai, double sigma2){
-    return (Xi - ai)/sigma2;
+double Solver::grad_ai(const vec &X,const vec &a){
+    double sum = 0;
+    for(int i=0; i < M; i++){
+        sum += X(i) - a(i);
+    }
+    return sum/(sigma*sigma);
 }
 
 double Solver::grad_bj(double bj, const vec &X, const mat &wj){
