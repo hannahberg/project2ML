@@ -142,22 +142,21 @@ double Solver::grad_bj(double bj, const vec &X, const mat &wj){
     return 1/(1+exp(-uj));
 }
 
-double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, double wj){
-   return Xi*sigma2*grad_bj(bj, X, &wj);
+double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj){
+   return Xi*sigma2*grad_bj(bj, X, wj);
 }
 
 
-double Solver::E_L(){
+double Solver::E_L(const vec &a, const vec &b, const vec &X, const mat &w){
     double energysum = 0;
     double r2 = 0;
     double temp_I = 0;
-    double u_ = 0
+    double u_ = 0;
     double sigma2_ = 1/(sigma*sigma);
     double I = 0;
     double II = 0;
     double temp_II = 0;
     double eu = 0;
-    double u_ = 0;
     double wmj = 0;
     double Xm = 0;
     for(int m = 0; m < M; m++){

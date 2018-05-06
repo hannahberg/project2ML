@@ -1,17 +1,22 @@
+/*
 #include "impsamp.h"
 #include "solver.h"
 
-Impsamp::Impsamp(double s_hbar,
-                 double mass,
-                 double s_omega,
-                 double s_rho,
-                 int s_mc,
-                 int s_N,
-                 int s_dim,
-                 double s_h,
-                 double s_dt)
+Impsamp::Impsamp(
+        double s_hbar,
+        double mass,
+        double s_omega,
+        double s_rho,
+        int s_mc,
+        int s_N,
+        int s_dim,
+        double s_h,
+        double s_dt,
+        double sig,
+        double s_H,
+        double s_M)
 :
-    Solver(s_beta, s_hbar, mass,s_omega, s_alpha, s_rho, s_mc, s_N, s_dim, s_h, s_dt)
+Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt, sig, s_H, s_M)
 {}
 
 vec Impsamp::langevin(std::ofstream &myfile, ofstream &myfile4, double alphanow){
@@ -32,8 +37,8 @@ vec Impsamp::langevin(std::ofstream &myfile, ofstream &myfile4, double alphanow)
 
     // loop over alpha when we try out
     double sdt = sqrt(dt);
-    double alpha4 = alpha*(-4);
-    double current_alpha = alphanow;//alpha_vec(num_alpha);
+    double alpha4 = 0.5*(-4);
+    double current_alpha = 0.5;
     // initialize random positions
     mat R3 = init_pos_gaus();
     mat R3new = R3;
@@ -150,3 +155,4 @@ double Impsamp::best_alpha(){
     alphafile2.close();
     return alpha_the_best;
 }
+*/
