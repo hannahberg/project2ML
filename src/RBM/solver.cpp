@@ -11,8 +11,8 @@ Solver::Solver(
                double s_h,
                double s_dt,
                double sig,
-               double s_M,
-               double s_H){
+               double s_H,
+               double s_M){
     hbar = s_hbar;
     m = mass;
     omega = s_omega;
@@ -57,19 +57,19 @@ mat Solver::init_w(){
     static normal_distribution<double> gaussianRNG(0,0.001);
     mat w = zeros(M,H);
     for(int i=0; i<M; i++){
-        for(int j=0; j<H; i++){
+        for(int j=0; j<H; j++){
             w(i,j) = gaussianRNG(genMT64);
+        }
     }
     return w;
-}
 }
 
 vec Solver::init_X(){
     random_device rd;
     mt19937_64 genMT64(rd());
     uniform_real_distribution<double> doubleRNG(-0.5,0.5);
-    vec X = zeros(H);
-    for(int i=0; i<H; i++){
+    vec X = zeros(M);
+    for(int i=0; i<M; i++){
         X(i) = doubleRNG(genMT64);
     }
     return X;
@@ -77,21 +77,14 @@ vec Solver::init_X(){
 }
 
 double Solver::wavefunc(vec a, vec b, mat w, vec X){
-    //bool interact = y/n ??
-    int i; int j;
     double g = 0;
     double f = 1;
-        for(i=0;i<N;i++){
-            for(int l=i+1;l<N;l++){
-                if(i!=l){
-                    f*=(1 + exp(b(j) + (X(i)*(w(i,j)/(sigma*sigma)))));
-                for(j=0;j<dim;j++){
-                        g += pow((X(i) - a(i)),2)/(2*sigma*sigma);
-                    }
-                }
-            }
-        }
-
+    for(int i=0;i<M;i++){
+        g += pow((X(i) - a(i)),2)/(2*sigma*sigma);
+    }
+    for(int j=0;j<H;j++){
+        f*=(1 + exp(u(b(j), X, w.col(j))));
+    }
     double psi = exp(g)*f;
     return psi;
 }
@@ -147,7 +140,7 @@ double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, const
 }
 
 
-double Solver::E_L(const vec &a, const vec &b, const vec &X, const mat &w){
+double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double energysum = 0;
     double r2 = 0;
     double temp_I = 0;
@@ -166,9 +159,9 @@ double Solver::E_L(const vec &a, const vec &b, const vec &X, const mat &w){
         temp_I = 0;
         temp_II = 0;
         II = 0;
-        for(int j = 0; j < N; j++){
+        for(int j = 0; j < H; j++){
             wmj = w(m,j);
-            u_ = u(b(j), X, w.row(m));
+            u_ = u(b(j), X, w.col(j));
             eu = exp(u_);
             temp_I += wmj/(1+1/eu);
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
