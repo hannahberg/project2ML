@@ -14,7 +14,7 @@ using namespace arma;
 class Solver{
 public:
     clock_t start, end;
-    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt, double sig, double s_H, double s_M);
+    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt, double sig, double s_M, double s_H);
     double hbar;
     int N; //number of particles
     double a_h0;
@@ -52,7 +52,7 @@ public:
 
     double grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj);
 
-    double E_L(const vec &a, const vec &b, const vec &X, const mat &w);
+    double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
 
 
 

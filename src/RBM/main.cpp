@@ -13,7 +13,7 @@ int main(){
     double h = 0.0001;
     int numpart = 1; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
     int mc = (1048576 + 1000) / numpart; // monte carlo cycles
-    int howmanyDs = 3;
+    int howmanyDs = 1;
     double hbar = 1;
     double mass = 1;
     double omega = 1;
@@ -38,6 +38,7 @@ int main(){
     string filename ="test_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs);
     myfile.open(filename + ".dat");
     myfile2.open(filename + "_energy.dat");
+    B->solve(myfile, myfile2);
     //delete Int;
     //delete Imp;
     delete B;

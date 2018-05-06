@@ -45,12 +45,13 @@ void Bruteforce::solve(std::ofstream &myfile, ofstream &myfile2){
 
     for(i=0;i<mc;i++){
         double bajsen = 0;
-        for(j=0;j<N;j++){
+        for(j=0;j<M;j++){
             //for(q=0;q<dim;q++){
                 Xnew(j) = X(j) + (doubleRNG(genMT64) - 0.5)*rho;
            // }
 
             double A = (wavefunc(a,b,w,X))/wavefunc(a,b,w,Xnew);
+
             A *= A;
 
             // test if new position is more probable than random number between 0 and 1.
@@ -60,12 +61,14 @@ void Bruteforce::solve(std::ofstream &myfile, ofstream &myfile2){
             } else {
                 Xnew(j) = X(j);
             }
+
+
             double bajs = E_L(a,b,w,X);
             newE += bajs; // calculate change in energy
             bajsen += bajs;
        }
 
-    myfile2 << scientific << bajsen/N << endl;
+    myfile2 << scientific << bajsen/M << endl;
     }
 
     cout << "Brute force finished! Hang in there <3" << endl;
@@ -78,5 +81,5 @@ void Bruteforce::solve(std::ofstream &myfile, ofstream &myfile2){
 
     end=clock();
     myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
-    myfile << scientific << newE/(mc*N) << " " << scientific << accept/(mc*N) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 0 << "  # Analytic" << endl;
+    myfile << scientific << newE/(mc*M) << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 0 << "  # Analytic" << endl;
 }
