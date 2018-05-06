@@ -12,9 +12,12 @@ Bruteforce::Bruteforce(
                        int s_N,
                        int s_dim,
                        double s_h,
-                       double s_dt)
+                       double s_dt,
+                       double sig,
+                       double s_H,
+                       double s_M)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt)
+    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt, sig, s_H, s_M)
 {}
 
 double Bruteforce::energy_analytic(){

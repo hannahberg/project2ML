@@ -1,17 +1,23 @@
+/*
+
 #include "interact.h"
 #include "solver.h"
 
-Interact::Interact(double s_hbar,
-                   double mass,
-                   double s_omega,
-                   double s_rho,
-                   int s_mc,
-                   int s_N,
-                   int s_dim,
-                   double s_h,
-                   double s_dt)
+Interact::Interact(
+        double s_hbar,
+        double mass,
+        double s_omega,
+        double s_rho,
+        int s_mc,
+        int s_N,
+        int s_dim,
+        double s_h,
+        double s_dt,
+        double sig,
+        double s_H,
+        double s_M)
 :
-    Solver(s_beta, s_hbar, mass,s_omega, s_alpha, s_rho, s_mc, s_N, s_dim, s_h, s_dt)
+Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt, sig, s_H, s_M)
 {binsize = 0.0032;}
 
 mat Interact::init_pos_interact(){
@@ -224,7 +230,7 @@ vec Interact::solve_interact( std::ofstream &myfile, std::ofstream &myfile5, dou
                     distR4new(p,j) = distR4new(j,p);
 
                 }
-            }*/
+            }
 
             double greens = exp((greensold-greensnew)/(4*Ddt));
 
@@ -265,7 +271,7 @@ vec Interact::solve_interact( std::ofstream &myfile, std::ofstream &myfile5, dou
 
                 }
             }
-            */
+
             }
 
     }
@@ -311,7 +317,7 @@ mat Interact::lapphi(const mat &R, double alpha_){
         }
     }
     lphi = -2*alpha_*((dim-1)+beta-2*alpha_*energy_r);
-    return lphi;*/
+    return lphi;
 
 
     for(int k = 0; k < N; k++){
@@ -446,7 +452,7 @@ mat Interact::nablafsquared(const mat& init_distance, const mat &R){
 
     return sumtot;
 }
-/*
+
 mat Interact::suma2(mat distanceR){
     int k; int j;
     mat suma = zeros(N);
@@ -465,7 +471,7 @@ mat Interact::suma2(mat distanceR){
 
     return suma;
 }
-*/
+
 
 double Interact::energy_interact(const mat& R, double alphanow){
     mat energy = zeros(N);
@@ -512,7 +518,7 @@ double Interact::energy_interact(const mat& R, double alphanow){
         Vext += c*r2; //calculate potential energy
     }
     //cout << "Vext = " << Vext << endl;
-    return totsum + Vext /*+ lphi*/;
+    return totsum + Vext + lphi
 }
 
 double Interact::best_alpha(){
@@ -553,3 +559,5 @@ vec Interact::dist_origo(const mat& R){
     }
     return d_origo;
 }
+*/
+
