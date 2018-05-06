@@ -5,6 +5,8 @@ Project 1: Variational Monte Carlo on bosons, see https://github.com/fridafu/FYS
 ### Project 2: The restricted Boltzmann machine applied to the quantum many body problem
 - [x] a) Calculate local energy and gradients
 - [ ] b) Initial code
+  - [x] Bruteforce for one and two particles 
+  - [ ] Gradient descent
 - [ ] c) Importance sampling
 - [ ] d) Statistical analysis using blocking
 - [ ] e) From Metropolis to Gibbs sampling with "new" wavefunction
