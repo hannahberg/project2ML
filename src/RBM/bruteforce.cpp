@@ -40,14 +40,14 @@ void Bruteforce::solve(std::ofstream &myfile, ofstream &myfile2){
     mat w = init_w();
     vec X = init_X();
     vec Xnew = X;
-    int i; int j; int q;
+    int i; int j;
     double accept = 0;
 
     for(i=0;i<mc;i++){
         double bajsen = 0;
         for(j=0;j<M;j++){
             //for(q=0;q<dim;q++){
-                Xnew(j) = X(j) + (doubleRNG(genMT64) - 0.5)*rho;
+                Xnew(j) = X(j) +  (doubleRNG(genMT64) - 0.5)*rho;
            // }
 
             double A = (wavefunc(a,b,w,X))/wavefunc(a,b,w,Xnew);
