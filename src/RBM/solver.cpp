@@ -175,3 +175,20 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
 }
 
 
+vec Solver::drift(const vec &b, const vec &X, const mat &w, const vec &a){
+    vec F = zeros(M);
+    for(int i = 0; i < M; i++){
+        F(i) += - X(i)+ a(i) + drifti(b,X,w,i);
+    }
+    F = (2/(sigma*sigma))*F;
+    return F;
+}
+
+
+double Solver::drifti(const vec &b, const vec &X, const mat &w, int k){
+    double sum = 0;
+    for(int j = 0; j < H; j++){
+        sum += w(k,j)/(1+exp(-u(b(j),X,w.col(j))));
+    }
+    return sum;
+}

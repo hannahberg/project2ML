@@ -54,7 +54,9 @@ public:
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
 
+    vec drift(const vec &b, const vec &X, const mat &w, const vec &a);
 
+    double drifti(const vec &b, const vec &X, const mat &w, int k);
 
 
 private:
