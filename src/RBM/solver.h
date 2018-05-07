@@ -42,6 +42,7 @@ public:
     vec init_a();
     vec init_b();
     vec init_X();
+    vec init_X_gaus();
     mat init_w();
 
     double u(double bj, const vec &X, const mat &wj);

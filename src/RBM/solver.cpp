@@ -73,7 +73,17 @@ vec Solver::init_X(){
         X(i) = doubleRNG(genMT64);
     }
     return X;
+}
 
+vec Solver::init_X_gaus(){
+    random_device rd;
+    mt19937_64 genMT64(rd());
+    normal_distribution<double> gaussianRNG(0.,0.5);
+    vec X = zeros(M);
+    for(int i=0; i<M; i++){
+        X(i) = gaussianRNG(genMT64);
+    }
+    return X;
 }
 
 double Solver::wavefunc(vec a, vec b, mat w, vec X){
