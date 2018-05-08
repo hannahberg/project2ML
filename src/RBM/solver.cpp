@@ -75,6 +75,25 @@ vec Solver::init_X(){
     return X;
 
 }
+vec Solver::init_alpha(const vec &a, const vec &b, const mat &w){
+    vec alpha = zeros(M+H+(M*H));
+    int i; int j; int k;
+    for(i=0;i<M;i++){
+        alpha(i) = a(i);
+        }
+    for(j=M;j<(M+H);j++){
+        alpha(j) = b(j);
+    }
+    k = 0;
+    for(i=0;i<M;i++){
+        for(j=0;j<H;j++){
+            alpha(k+M+H) = w(i,j);
+            k++;
+        }
+    }
+    return alpha;
+}
+
 
 double Solver::wavefunc(vec a, vec b, mat w, vec X){
     double g = 0;
@@ -126,21 +145,43 @@ double Solver::u(double bj, const vec &X, const mat &wj){
     return bj + sum;
 }
 
-double Solver::grad_ai(const vec &X,const vec &a){
-    double sum = 0;
+vec Solver::grad_ai(const vec &X,const vec &a){
+    vec grada = zeros(M);
     for(int i=0; i < M; i++){
-        sum += X(i) - a(i);
+        grada(i) = X(i) - a(i);
     }
-    return sum/(sigma*sigma);
+    return grada/(sigma*sigma);
 }
 
-double Solver::grad_bj(double bj, const vec &X, const mat &wj){
-    double uj = u(bj,X,wj);
-    return 1/(1+exp(-uj));
+vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
+    vec gradb = zeros(H);
+    double uj;
+    for (int j=0; j < H; j++){
+        uj = u(b(j),X,w.row(j));
+        gradb(j) = 1+exp(-uj);
+    }
+    return 1/gradb;
 }
 
-double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj){
-   return Xi*sigma2*grad_bj(bj, X, wj);
+
+mat Solver::grad_wij(const vec &b,const vec &X, const mat &w){
+    mat gradw = zeros(M,H);
+    double uj;
+    for(int i=0; i < M; i++){
+        for (int j=0; j < H; j++){
+            uj = u(b(j),X,w.row(j));
+            gradw(i,j) = X(i)/(1+exp(-uj));
+        }
+    }
+    return gradw/(sigma*sigma);
+}
+
+const vec& Solver::getG1(){
+    return G1;
+}
+
+const vec& Solver::getG2(){
+    return G2;
 }
 
 

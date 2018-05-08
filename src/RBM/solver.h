@@ -43,14 +43,15 @@ public:
     vec init_b();
     vec init_X();
     mat init_w();
+    vec init_alpha(const vec &a, const vec &b, const mat &w);
 
     double u(double bj, const vec &X, const mat &wj);
 
-    double grad_ai(const vec &X,const vec &a);
+    vec grad_ai(const vec &X,const vec &a);
 
-    double grad_bj(double bj, const vec &X, const mat &wj);
+    vec grad_bj(const vec &b,const vec &X, const mat &w);
 
-    double grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj);
+    mat grad_wij(const vec &b,const vec &X, const mat &w);
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
 
@@ -58,5 +59,7 @@ public:
 
 
 private:
+    const vec& getG1();
+    const vec& getG2();
 };
 #endif

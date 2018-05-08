@@ -38,7 +38,7 @@ int main(){
     myfile.open(filename + ".dat");
     myfile2.open(filename + "_energy.dat");
     //B->solve();
-    B->best_a(myfile,myfile2);
+    B->best_params(myfile,myfile2);
     B->go_brute(myfile, myfile2);
     //delete Int;
     //delete Imp;
