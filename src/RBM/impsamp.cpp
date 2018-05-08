@@ -209,19 +209,21 @@ void Impsamp::langevin(std::ofstream &myfile, ofstream &myfile2){
     double D = 0.5; // diffusion coefficient
     double Ddt = D*dt;
     double Ddt05 = 0.5*D*dt;
-    for(i = 0;i < mc; i++){
-        greens = 0;
+    double sigma_2 = 2/(sigma*sigma);
+    for(i = 0; i < mc; i++){
+
         double bajsen = 0;
 
-        for(j=0;j<M;j++){
+        for(j = 0; j < M; j++){
 
             //for(q=0;q<dim;q++){
                 Xnew(j) = X(j) + Ddt*F(j) + gaussianRNG(genMT64)*sdt;
-                Fnew(j) = 2/(sigma*sigma)*(-X(j)+a(j) + drifti(b,X,w,j));
+                Fnew(j) = sigma_2*(-X(j)+a(j) + drifti(b,X,w,j));
            // }
 
             double A = (wavefunc(a,b,w,X))/wavefunc(a,b,w,Xnew);
-            greens += 0.5*(F(j)+Fnew(j))*(Ddt05*(F(j)-Fnew(j))-Xnew(j)+X(j));
+            greens = 0.5*(F(j)+Fnew(j))*(Ddt05*(F(j)-Fnew(j))-Xnew(j)+X(j));
+            greens = exp(greens);
             A *= A;
             A = A*greens;
             // test if new position is more probable than random number between 0 and 1.
