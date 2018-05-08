@@ -56,8 +56,10 @@ void Gibbs::sample_gibbs(std::ofstream &myfile, ofstream &myfile2){
             cout << E_LGibbs << endl;
             sumE += E_LGibbs;
             newE += E_LGibbs;
+
         }
         myfile2 << scientific << newE/M << endl;
+
     }
     end=clock();
     myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
