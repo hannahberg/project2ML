@@ -44,6 +44,8 @@ public:
     vec init_X();
     vec init_X_gaus();
     mat init_w();
+    double energy_analytic();
+    double wavefunc_g(vec a, vec b, mat w, vec X);
 
     double u(double bj, const vec &X, const mat &wj);
 

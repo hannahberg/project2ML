@@ -255,5 +255,5 @@ void Impsamp::langevin(std::ofstream &myfile, ofstream &myfile2){
 
     end=clock();
     myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
-    myfile << scientific << newE/(mc*M) << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 1 << "  # Analytic" << endl;
+    myfile << scientific << newE/(mc*M) << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 1 << "  # impsamp" << endl;
 }

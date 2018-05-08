@@ -99,6 +99,10 @@ double Solver::wavefunc(vec a, vec b, mat w, vec X){
     return psi;
 }
 
+double Solver::wavefunc_g(vec a, vec b, mat w, vec X){
+    return sqrt(wavefunc(a,b,w,X));
+}
+
 /*
 mat Solver::init_pos_gaus(){
     static random_device rd;
@@ -201,4 +205,8 @@ double Solver::drifti(const vec &b, const vec &X, const mat &w, int k){
         sum += w(k,j)/(1+exp(-u(b(j),X,w.col(j))));
     }
     return sum;
+}
+
+double Solver::energy_analytic(){
+    return 0.5 * M;
 }
