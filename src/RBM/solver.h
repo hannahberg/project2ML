@@ -56,6 +56,7 @@ public:
     double grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj);
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
+    double ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X);
 
     vec drift(const vec &b, const vec &X, const mat &w, const vec &a);
 
