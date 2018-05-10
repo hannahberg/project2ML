@@ -8,7 +8,8 @@ Project 1: Variational Monte Carlo on bosons, see https://github.com/fridafu/FYS
   - [x] Bruteforce for one and two particles 
   - [ ] Gradient descent
 - [ ] c) Importance sampling
-  - [x] Implement code
+  - [x] Structure of code
+  - [ ] Implement gradient descent
   - [ ] Get results
 - [ ] d) Statistical analysis using blocking 
 - [x] e) From Metropolis to Gibbs sampling with "new" wavefunction
