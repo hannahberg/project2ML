@@ -6,7 +6,7 @@ Project 1: Variational Monte Carlo on bosons, see https://github.com/fridafu/FYS
 - [x] a) Calculate local energy and gradients
 - [ ] b) Initial code
   - [x] Bruteforce for one and two particles 
-  - [ ] Gradient descent
+  - [x] Gradient descent
 - [ ] c) Importance sampling
   - [x] Structure of code
   - [ ] Implement gradient descent
