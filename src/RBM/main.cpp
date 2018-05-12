@@ -1,7 +1,7 @@
 #include <iostream>
 #include "solver.h"
 #include "bruteforce.h"
-//#include "impsamp.h"
+#include "impsamp.h"
 //#include "interact.h"
 using namespace std;
 using namespace arma;
@@ -19,15 +19,16 @@ int main(){
     double sig = 1;
     double numM = howmanyDs*numpart;
     double hidden = 2;
+    double dt = 0.001;
 
     ofstream myfile;
     //myfile.open("interaction_N10.dat");
     //for(int elem=0; elem<size(dtvec,0); elem++){
     //    if(alphavec(elem) != 0.5){
-    double dt = 0.01;//dtvec(elem);
+    //dtvec(elem);
     Solver S(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM); // initialize Solver class
     Bruteforce* B = new Bruteforce(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
-    //Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
+    Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
     //Interact* Int = new Interact(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
 
     ofstream myfile2;
@@ -37,11 +38,15 @@ int main(){
     string filename ="test_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs);
     myfile.open(filename + ".dat");
     myfile2.open(filename + "_energy.dat");
+
     //B->solve();
     B->best_params(myfile,myfile2);
     B->go_brute(myfile, myfile2);
+
+    //B->solve(myfile, myfile2);
+    //Imp->langevin(myfile,myfile2);
     //delete Int;
-    //delete Imp;
+    delete Imp;
     delete B;
     //}
     myfile.close();

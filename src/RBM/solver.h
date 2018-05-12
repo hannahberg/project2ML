@@ -43,6 +43,7 @@ public:
     vec init_a();
     vec init_b();
     vec init_X();
+    vec init_X_gaus();
     mat init_w();
     rowvec init_alpha(const vec &a, const vec &b, const mat &w);
 
@@ -58,8 +59,14 @@ public:
     const rowvec& getG1();
     const rowvec& getG2();
 
+
     void calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w);
     void calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat &mean_d_wf_E_w);
+
+    vec drift(const vec &b, const vec &X, const mat &w, const vec &a);
+
+    double drifti(const vec &b, const vec &X, const mat &w, int k);
+
 
 private:
 

@@ -47,7 +47,9 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
     //double newE = 0;
     vec Xnew = X;
+
     vec Xflex = X;
+
     int i; int j;
     double accept = 0;
     double localenergy;
@@ -58,8 +60,8 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     for(i=0;i<mc;i++){
         //double bajsen = 0;
         for(j=0;j<M;j++){
-           Xnew(j) = Xflex(j) + (doubleRNG(genMT64) - 0.5)*rho;
 
+            Xnew(j) = Xflex(j) + (doubleRNG(genMT64) - 0.5)*rho;
             A = (wavefunc(a,b,w,Xflex))/wavefunc(a,b,w,Xnew);
             A *= A;
 

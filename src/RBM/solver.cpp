@@ -73,7 +73,17 @@ vec Solver::init_X(){
         X(i) = doubleRNG(genMT64);
     }
     return X;
+}
 
+vec Solver::init_X_gaus(){
+    random_device rd;
+    mt19937_64 genMT64(rd());
+    normal_distribution<double> gaussianRNG(0.,0.5);
+    vec X = zeros(M);
+    for(int i=0; i<M; i++){
+        X(i) = gaussianRNG(genMT64);
+    }
+    return X;
 }
 rowvec Solver::init_alpha(const vec &a, const vec &b, const mat &w){
     rowvec alpha = zeros<rowvec>(M+H+(M*H));
@@ -220,6 +230,7 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
 }
 
 
+
 void Solver::calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w){
     G1 = init_alpha(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
 }
@@ -229,3 +240,21 @@ void Solver::calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat
     G2 = init_alpha(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
 }
 
+
+vec Solver::drift(const vec &b, const vec &X, const mat &w, const vec &a){
+    vec F = zeros(M);
+    for(int i = 0; i < M; i++){
+        F(i) += - X(i)+ a(i) + drifti(b,X,w,i);
+    }
+    F = (2/(sigma*sigma))*F;
+    return F;
+}
+
+
+double Solver::drifti(const vec &b, const vec &X, const mat &w, int k){
+    double sum = 0;
+    for(int j = 0; j < H; j++){
+        sum += w(k,j)/(1+exp(-u(b(j),X,w.col(j))));
+    }
+    return sum;
+}
