@@ -18,5 +18,7 @@ Project 1: Variational Monte Carlo on bosons, see https://github.com/fridafu/FYS
   - [ ] Implement gradient descent 
   - [ ] Do all the runs!
 - [ ] g) Interaction
-- [ ] h) Analyze and interpret the results from the two-electron system
+  - [ ] Include interaction
+  - [ ] Experiment with learning rate 
+  - [ ] Experiment with number of hidden values
 
