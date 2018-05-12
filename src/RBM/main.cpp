@@ -10,9 +10,9 @@ int main(){
     vec dtvec = logspace<vec>(-4,0,51);
     double rho = 0.1;
     double h = 0.0001;
-    int numpart = 1; //
+    int numpart = 2; //
     int mc = (1048576 + 1000) / numpart; // monte carlo cycles
-    int howmanyDs = 1;
+    int howmanyDs = 2;
     double hbar = 1;
     double mass = 1;
     double omega = 1;

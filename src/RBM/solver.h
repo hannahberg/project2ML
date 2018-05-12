@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iomanip>
 #include <math.h>
+//#include <QProgressBar>
 using namespace std;
 using namespace arma;
 
@@ -43,7 +44,7 @@ public:
     vec init_b();
     vec init_X();
     mat init_w();
-    vec init_alpha(const vec &a, const vec &b, const mat &w);
+    rowvec init_alpha(const vec &a, const vec &b, const mat &w);
 
     double u(double bj, const vec &X, const mat &wj);
 
@@ -54,12 +55,15 @@ public:
     mat grad_wij(const vec &b,const vec &X, const mat &w);
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
+    const rowvec& getG1();
+    const rowvec& getG2();
 
-
-
+    void calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w);
+    void calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat &mean_d_wf_E_w);
 
 private:
-    const vec& getG1();
-    const vec& getG2();
+
+    rowvec G1;
+    rowvec G2;
 };
 #endif
