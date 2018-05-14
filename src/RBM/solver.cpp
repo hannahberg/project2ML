@@ -85,6 +85,25 @@ vec Solver::init_X_gaus(){
     }
     return X;
 }
+rowvec Solver::init_alpha(const vec &a, const vec &b, const mat &w){
+    rowvec alpha = zeros<rowvec>(M+H+(M*H));
+    int i; int j; int k;
+    for(i=0;i<M;i++){
+        alpha(i) = a(i);
+    }
+    for(int j=M;j<(M+H);j++){
+        alpha(j) = b(j-M);
+    }
+    k = 0;
+    for(i=0;i<M;i++){
+        for(j=0;j<H;j++){
+            alpha(k+M+H) = w(i,j);
+            k++;
+        }
+    }
+    return alpha;
+}
+
 
 double Solver::wavefunc(vec a, vec b, mat w, vec X){
     double g = 0;
@@ -140,17 +159,43 @@ double Solver::u(double bj, const vec &X, const mat &wj){
     return bj + sum;
 }
 
-double Solver::grad_ai(double Xi,double ai, double sigma2){
-    return (Xi - ai)/sigma2;
+vec Solver::grad_ai(const vec &X,const vec &a){
+    vec grada = zeros(M);
+    for(int i=0; i < M; i++){
+        grada(i) = X(i) - a(i);
+    }
+    return grada/(sigma*sigma);
 }
 
-double Solver::grad_bj(double bj, const vec &X, const mat &wj){
-    double uj = u(bj,X,wj);
-    return 1/(1+exp(-uj));
+vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
+    vec gradb = zeros(H);
+    double uj;
+    for (int j=0; j < H; j++){
+        uj = u(b(j),X,w.col(j));
+        gradb(j) = 1+exp(-uj);
+    }
+    return 1/gradb;
 }
 
-double Solver::grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj){
-   return Xi*sigma2*grad_bj(bj, X, wj);
+
+mat Solver::grad_wij(const vec &b,const vec &X, const mat &w){
+    mat gradw = zeros(M,H);
+    double uj;
+    for(int i=0; i < M; i++){
+        for (int j=0; j < H; j++){
+            uj = u(b(j),X,w.col(j));
+            gradw(i,j) = X(i)/(1+exp(-uj));
+        }
+    }
+    return gradw/(sigma*sigma);
+}
+
+const rowvec& Solver::getG1(){
+    return G1;
+}
+
+const rowvec& Solver::getG2(){
+    return G2;
 }
 
 
@@ -220,6 +265,17 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
     }
     return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega;
 }
+
+
+void Solver::calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w){
+    G1 = init_alpha(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
+}
+
+
+void Solver::calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat &mean_d_wf_E_w){
+    G2 = init_alpha(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
+}
+
 
 vec Solver::drift(const vec &b, const vec &X, const mat &w, const vec &a){
     vec F = zeros(M);

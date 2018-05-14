@@ -10,9 +10,9 @@ using namespace arma;
 int main(){
     vec dtvec = logspace<vec>(-4,0,51);
     double rho = 0.1;
-    //double dt = 0.01; // [0.001, 0.01]
     double h = 0.0001;
     int numpart = 2; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
+
     int mc = (1048576 + 1000) / numpart; // monte carlo cycles
     int howmanyDs = 2;
     double hbar = 1;
@@ -40,9 +40,17 @@ int main(){
     string filename ="test_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs);
     myfile.open(filename + ".dat");
     myfile2.open(filename + "_energy.dat");
+
+    //B->solve();
+    B->best_params(myfile,myfile2);
+    B->go_brute(myfile, myfile2);
+
     //B->solve(myfile, myfile2);
     //Imp->langevin(myfile,myfile2);
+
     G->sample_gibbs(myfile,myfile2);
+
+
     //delete Int;
     delete G;
     delete Imp;

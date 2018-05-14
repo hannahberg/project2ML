@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iomanip>
 #include <math.h>
+//#include <QProgressBar>
 using namespace std;
 using namespace arma;
 
@@ -44,19 +45,31 @@ public:
     vec init_X();
     vec init_X_gaus();
     mat init_w();
+
     double energy_analytic();
     double wavefunc_g(vec a, vec b, mat w, vec X);
 
+    rowvec init_alpha(const vec &a, const vec &b, const mat &w);
+
+
     double u(double bj, const vec &X, const mat &wj);
 
-    double grad_ai(double Xi,double ai, double sigma2);
+    vec grad_ai(const vec &X,const vec &a);
 
-    double grad_bj(double bj, const vec &X, const mat &wj);
+    vec grad_bj(const vec &b,const vec &X, const mat &w);
 
-    double grad_wij(double Xi, double sigma2, double bj, const vec &X, const mat &wj);
+    mat grad_wij(const vec &b,const vec &X, const mat &w);
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
+
     double ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X);
+
+    const rowvec& getG1();
+    const rowvec& getG2();
+
+
+    void calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w);
+    void calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat &mean_d_wf_E_w);
 
     vec drift(const vec &b, const vec &X, const mat &w, const vec &a);
 
@@ -64,5 +77,8 @@ public:
 
 
 private:
+
+    rowvec G1;
+    rowvec G2;
 };
 #endif
