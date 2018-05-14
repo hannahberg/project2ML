@@ -13,7 +13,7 @@ int main(){
     double h = 0.0001;
     int numpart = 2; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    int mc = (1048576 + 1000) / numpart; // monte carlo cycles
+    int mc = 100000;//(1048576 + 1000) / numpart; // monte carlo cycles
     int howmanyDs = 2;
     double hbar = 1;
     double mass = 1;
@@ -42,13 +42,17 @@ int main(){
     myfile2.open(filename + "_energy.dat");
 
     //B->solve();
-    B->best_params(myfile,myfile2);
-    B->go_brute(myfile, myfile2);
+    int grad_cycle = 1000;
+    double learning = 0.2;
+
+    //Imp->best_params(myfile,myfile2,learning,grad_cycle);
+    G->best_params(myfile,myfile2,learning,grad_cycle);
+    //B->go_brute(myfile, myfile2);
 
     //B->solve(myfile, myfile2);
     //Imp->langevin(myfile,myfile2);
 
-    G->sample_gibbs(myfile,myfile2);
+    //G->sample_gibbs(myfile,myfile2);
 
 
     //delete Int;

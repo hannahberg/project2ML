@@ -43,8 +43,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     static mt19937_64 genMT64(rd());
     static uniform_real_distribution<double> doubleRNG(0,1);
     double sumE = 0;
-    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
-    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
+
     //double newE = 0;
     vec Xnew = X;
 
@@ -54,6 +53,8 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     double accept = 0;
     double localenergy;
     double A;
+    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
+    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
     vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
     vec dwfa; vec dwfb; mat dwfw;
@@ -99,29 +100,8 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     mat mean_d_wf_w = sum_d_wf_w/(M*mc);
     mat mean_d_wf_E_w = sum_d_wf_E_w/(M*mc);
 
-    //vec g1 = getG1(); //definer disse i header!!
-    //vec g2 = getG2();
-    calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);//zeros(M+H+M*H);
-    calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);//zeros(M+H+M*H);
-
-    /*
-    for(i = 0; i < M; i++){
-        g1(i) = mean_d_wf_a(i);
-        g2(i) = mean_d_wf_E_a(i);
-    }
-    for(int p = M; p < (M+H); p++){
-        g1(p) = mean_d_wf_b(p-M);
-        g2(p) = mean_d_wf_E_b(p-M);
-    }
-    int k = 0;
-    for(i=0; i < M; i++){
-        for(j=0; j<H; j++){
-            g1(k+M+H) = mean_d_wf_w(i,j);
-            g2(k+M+H) = mean_d_wf_E_w(i,j);
-            k++;
-        }
-    }
-    */
+    calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
+    calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     myfile2 << scientific << sumE/M << endl;
 
     cout << "Brute force finished! Hang in there <3" << endl;
