@@ -45,7 +45,12 @@ public:
     vec init_X();
     vec init_X_gaus();
     mat init_w();
+
+    double energy_analytic();
+    double wavefunc_g(vec a, vec b, mat w, vec X);
+
     rowvec init_alpha(const vec &a, const vec &b, const mat &w);
+
 
     double u(double bj, const vec &X, const mat &wj);
 
@@ -56,6 +61,9 @@ public:
     mat grad_wij(const vec &b,const vec &X, const mat &w);
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
+
+    double ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X);
+
     const rowvec& getG1();
     const rowvec& getG2();
 

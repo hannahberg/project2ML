@@ -1,6 +1,6 @@
 #include "solver.h"
 #include "gibbs.h"
-/*
+
 using namespace arma;
 
 Gibbs::Gibbs(
@@ -41,14 +41,18 @@ void Gibbs::sample_gibbs(std::ofstream &myfile, ofstream &myfile2){
     a = init_a();
     vec b = init_b()*0.001;
     X = init_X();
-    // do gradient descent to find a, b and w here
-    for(int k = 0; k < mc; k++){
-        newE = 0;
 
+    for(int k = 0; k < mc; k++){
+
+        //X = init_X_gaus();
+        newE = 0;
+        //a = init_a();
 
         for(i = 0; i < M; i++){ // finding the ideal positions X(i)
             double mu = get_mu(i,hid,w);
+            //cout << "lol" << endl;
             X(i) = random_mu_std(mu);
+
         }
 
         for(j = 0; j < H; j++){
@@ -102,4 +106,4 @@ double Gibbs::random_mu_std(double mu){
     static normal_distribution<double> gaussianRNG(mu,sigma);
     return gaussianRNG(genMT64);
 }
-*/
+

@@ -2,6 +2,7 @@
 #include "solver.h"
 #include "bruteforce.h"
 #include "impsamp.h"
+#include "gibbs.h"
 //#include "interact.h"
 using namespace std;
 using namespace arma;
@@ -10,7 +11,8 @@ int main(){
     vec dtvec = logspace<vec>(-4,0,51);
     double rho = 0.1;
     double h = 0.0001;
-    int numpart = 2; //
+    int numpart = 2; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
+
     int mc = (1048576 + 1000) / numpart; // monte carlo cycles
     int howmanyDs = 2;
     double hbar = 1;
@@ -30,7 +32,7 @@ int main(){
     Bruteforce* B = new Bruteforce(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
     Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
     //Interact* Int = new Interact(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
-
+    Gibbs* G = new Gibbs(hbar, mass, omega, rho, mc, numpart, howmanyDs, h, dt, sig, hidden, numM);
     ofstream myfile2;
     ofstream myfile3;
     ofstream myfile4;
@@ -45,7 +47,12 @@ int main(){
 
     //B->solve(myfile, myfile2);
     //Imp->langevin(myfile,myfile2);
+
+    G->sample_gibbs(myfile,myfile2);
+
+
     //delete Int;
+    delete G;
     delete Imp;
     delete B;
     //}

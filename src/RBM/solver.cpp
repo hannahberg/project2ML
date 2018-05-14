@@ -118,6 +118,10 @@ double Solver::wavefunc(vec a, vec b, mat w, vec X){
     return psi;
 }
 
+double Solver::wavefunc_g(vec a, vec b, mat w, vec X){
+    return sqrt(wavefunc(a,b,w,X));
+}
+
 /*
 mat Solver::init_pos_gaus(){
     static random_device rd;
@@ -229,6 +233,38 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
 
 }
 
+double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
+    double energysum = 0;
+    double r2 = 0;
+    double temp_I = 0;
+    double u_ = 0;
+    double sigma2_ = 1/(sigma*sigma);
+    double I = 0;
+    double II = 0;
+    double temp_II = 0;
+    double eu = 0;
+    double wmj = 0;
+    double Xm = 0;
+    for(int m = 0; m < M; m++){
+        Xm = X(m);
+        I = -(Xm-a(m));
+        r2 += Xm*Xm;
+        temp_I = 0;
+        temp_II = 0;
+        II = 0;
+        for(int j = 0; j < H; j++){
+            wmj = w(m,j);
+            u_ = u(b(j), X, w.col(j));
+            eu = exp(u_);
+            temp_I += wmj/(1+1/eu);
+            temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
+        }
+        II = sigma2_*sigma2_*temp_II;
+        I *= I + sigma2_*temp_I;
+        energysum += 0.25*I+0.5*II;
+    }
+    return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega;
+}
 
 
 void Solver::calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w){
@@ -257,4 +293,8 @@ double Solver::drifti(const vec &b, const vec &X, const mat &w, int k){
         sum += w(k,j)/(1+exp(-u(b(j),X,w.col(j))));
     }
     return sum;
+}
+
+double Solver::energy_analytic(){
+    return 0.5 * M;
 }
