@@ -8,8 +8,10 @@ public:
     //vec langevin(std::ofstream &myfile, std::ofstream &myfile4, double alphanow);
     double energy_impsamp(const mat &R, double alpha);
     double best_alpha();
-    void langevin(std::ofstream &myfile, ofstream &myfile2);
+    double langevin(const vec &a, const vec &b, const mat &w, const vec &Xin, std::ofstream &myfile, ofstream &myfile2);
     double energy_analytic();
+    rowvec best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, int lol);
+    void go_imp(std::ofstream &myfile, ofstream &myfile2);
 
 };
 #endif

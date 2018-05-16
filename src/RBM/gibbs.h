@@ -8,9 +8,10 @@ public:
     //vec langevin(std::ofstream &myfile, std::ofstream &myfile4, double alphanow);
     vec init_h_bool();
     double prob(const vec& X, double bj, const mat &wj);
-    void sample_gibbs(std::ofstream &myfile, ofstream &myfile2);
+    double sample_gibbs(const vec &a, const vec &b, const mat &w, std::ofstream &myfile, ofstream &myfile2);
     double get_mu(int i, vec const &hid, const mat &w);
     double random_mu_std(double mu);
+    rowvec best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, int lol);
 
 };
 #endif

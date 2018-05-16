@@ -42,6 +42,13 @@ int main(){
     myfile2.open(filename + "_energy.dat");
 
     //B->solve();
+
+    int grad_cycle = 1000;
+    double learning = 0.2;
+
+    //Imp->best_params(myfile,myfile2,learning,grad_cycle);
+    G->best_params(myfile,myfile2,learning,grad_cycle);
+
     vec b = S.init_b();
     mat w = S.init_w();
     vec X = S.init_X();
@@ -50,12 +57,13 @@ int main(){
         gamma = gammavec(i);
         B->best_params(myfile,myfile2,gamma,a,b,w,X);
     }
+
     //B->go_brute(myfile, myfile2);
 
     //B->solve(myfile, myfile2);
     //Imp->langevin(myfile,myfile2);
 
-    G->sample_gibbs(myfile,myfile2);
+    //G->sample_gibbs(myfile,myfile2);
 
 
     //delete Int;
