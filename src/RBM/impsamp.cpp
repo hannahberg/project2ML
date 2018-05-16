@@ -170,13 +170,12 @@ Impsamp::Impsamp(
                        int s_mc,
                        int s_N,
                        int s_dim,
-                       double s_h,
                        double s_dt,
                        double sig,
-                       double s_H,
+                       int s_H,
                        double s_M)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt, sig, s_H, s_M)
+    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M)
 {}
 
 double Impsamp::energy_analytic(){

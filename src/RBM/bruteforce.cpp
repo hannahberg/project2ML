@@ -11,13 +11,12 @@ Bruteforce::Bruteforce(
                        int s_mc,
                        int s_N,
                        int s_dim,
-                       double s_h,
                        double s_dt,
                        double sig,
-                       double s_H,
+                       int s_H,
                        double s_M)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_h, s_dt, sig, s_H, s_M)
+    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M)
 {}
 
 double Bruteforce::energy_analytic(){
@@ -118,16 +117,12 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     return mean_E;
 }
 
-rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2){
+rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X){
     ofstream afile; ofstream afile2;
 
-    vec b = init_b();
-    mat w = init_w();
-    vec X = init_X();
-    vec a = init_a();
-
-    afile.open("best_N2_D2.dat");
-    afile2.open("converge_N2_D2.dat");
+    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H);
+    afile.open("params_" + filename + ".dat");
+    afile2.open("energy_" + filename + ".dat");
     rowvec alpha_best;
     int lol = 100;
     int MHMH = M+H +M*H;
@@ -138,12 +133,9 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2){
     startalpha.print();
     alphamat.row(0) = startalpha;
 
-    double gamma = 0.2; // LEARNING RATE <3
-
     double mean_EL;
     rowvec g1; rowvec g2; rowvec alphanow;
     for(int r=0;r<lol-1;r++){
-        cout << r << endl;
         mean_EL = solve(a, b, w, X, myfile, myfile2);
 
         g1 = getG1();
@@ -165,11 +157,11 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2){
 
             //afile << i << endl; //checking if it oscillates in the bottom
         }
-    alpha_best = alphanow.tail_rows(1);//FRIDA: sto egentlig alpha_best = alpha.row(lol);
-    afile << a << endl;
-    afile << b << endl;
-    afile << w << endl;
-    afile.close();
     afile2.close();
+    alpha_best = alphanow;
+    afile <<  setprecision(12)  << a << endl;
+    afile <<  setprecision(12) << b << endl;
+    afile <<  setprecision(12) << w << endl;
+    afile.close();
     return alpha_best;
 }

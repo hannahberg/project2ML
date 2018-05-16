@@ -15,7 +15,7 @@ using namespace arma;
 class Solver{
 public:
     clock_t start, end;
-    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_h, double s_dt, double sig, double s_M, double s_H);
+    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_M, int s_H);
     double hbar;
     int N; //number of particles
     double a_h0;
@@ -27,7 +27,7 @@ public:
     double dt;
     double sigma;
     double M;
-    double H;
+    int H;
     int mc; //num MC cycles
     int dim;
     double rho; //position update parameter
