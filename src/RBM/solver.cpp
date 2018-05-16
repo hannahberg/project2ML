@@ -1,8 +1,6 @@
 #include "solver.h"
 
-Solver::Solver(double s_hbar,
-               double mass,
-               double s_omega,
+Solver::Solver(double s_omega,
                double s_rho,
                int s_mc,
                int s_N,
@@ -11,10 +9,7 @@ Solver::Solver(double s_hbar,
                double sig,
                int s_H,
                int s_M){
-    hbar = s_hbar;
-    m = mass;
     omega = s_omega;
-    a_h0 = sqrt(hbar/(m*omega));
     rho = s_rho;
     mc = s_mc;
     N = s_N;

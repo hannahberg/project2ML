@@ -13,8 +13,6 @@ int main(){
     int numpart = 1; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
     int mc = 100000;//(1048576 + 1000) / numpart; // monte carlo cycles
     int howmanyDs = 1;
-    double hbar = 1;
-    double mass = 1;
     double omega = 1;
     double sig = 1;
     double numM = howmanyDs*numpart;
@@ -28,11 +26,11 @@ int main(){
     //for(int elem=0; elem<size(dtvec,0); elem++){
     //    if(alphavec(elem) != 0.5){
     //dtvec(elem);
-    Solver S(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM); // initialize Solver class
-    Bruteforce* B = new Bruteforce(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
-    Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
+    Solver S(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM); // initialize Solver class
+    Bruteforce* B = new Bruteforce(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
+    Impsamp* Imp = new Impsamp(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
     //Interact* Int = new Interact(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
-    Gibbs* G = new Gibbs(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
+    Gibbs* G = new Gibbs(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
     ofstream myfile2;
     ofstream myfile3;
     ofstream myfile4;
@@ -54,7 +52,7 @@ int main(){
     vec X = S.init_X();
     vec a = S.init_a();
     for(int i=0;i<5;i++){
-        gamma = gammavec(i);
+        gamma = 7.;
         B->best_params(myfile,myfile2,gamma,a,b,w,X);
     }
 

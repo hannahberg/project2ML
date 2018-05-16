@@ -15,15 +15,11 @@ using namespace arma;
 class Solver{
 public:
     clock_t start, end;
-    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_M, int s_H);
-    double hbar;
+    Solver(double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_M, int s_H);
     int N; //number of particles
     double a_h0;
     double B;
     double omega;
-    double m;
-    double h;
-    double h2;
     double dt;
     double sigma;
     double M;
