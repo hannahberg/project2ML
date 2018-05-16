@@ -161,19 +161,19 @@ double Solver::calc_interaction(const vec &X){
     double sum = 0;
     double rij;
     for(int i = 0; i < M-dim; i+=dim){
-
         for(int j = i+dim; j < M; j+=dim){
             //cout << "in ur mama" << endl;
             for(int d = 0; d < dim; d++){
                 //cout << "i " << i + d << " " <<"j " << j+d << endl;
+//                cout << X(i+d) << " " <<X(j+d) << endl;
                 rij = X(i+d)-X(j+d);
                 rij *= rij;
                 sum += rij;
             }
         }
     }
-    sum = 1/sqrt(sum);
-    //cout << sum << endl;
+    sum = 1.0/sqrt(sum);
+//    cout << "1/rij " << sum << endl;
     return sum;
 
 }

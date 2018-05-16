@@ -286,19 +286,19 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     return E_;
 }
 
-rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, int lol){// gamma is learning rate <3
+rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, ofstream &myfile2, double gamma, int lol){// gamma is learning rate <3
     ofstream afile; ofstream afile2;
 
-    vec b = init_b();
-    mat w = init_w();
-    vec X = init_X();
-    vec a = init_a();
+//    vec b = init_b();
+//    mat w = init_w();
+//    vec X = init_X();
+//    vec a = init_a();
     int MHMH = M+H+M*H;
     afile.open("imp_best_N2_D2.dat");
     afile2.open("imp_converge_N2_D2.dat");
     mat alphamat = zeros(lol,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
-    startalpha.print();
+//    startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;

@@ -124,17 +124,17 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X){
     ofstream afile; ofstream afile2;
 
-    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H);
+    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("params_" + filename + ".dat");
     afile2.open("energy_" + filename + ".dat");
     rowvec alpha_best;
     int lol = 100;
     int MHMH = M+H +M*H;
-    //cout << "M+H+M*H" << MHMH<< endl;
+
     mat alphamat = zeros(lol,MHMH);
-    //cout << "alphamat" << alphamat.row(0) << endl;
+
     mat startalpha = mat(init_alpha(a,b,w));
-    startalpha.print();
+    //startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
