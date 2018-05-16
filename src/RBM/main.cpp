@@ -44,8 +44,7 @@ int main(){
     int grad_cycle = 1000;
     double learning = 0.2;
 
-    //Imp->best_params(myfile,myfile2,learning,grad_cycle);
-    G->best_params(myfile,myfile2,learning,grad_cycle);
+    //G->best_params(myfile,myfile2,learning,grad_cycle);
 
     vec b = S.init_b();
     mat w = S.init_w();
@@ -53,10 +52,10 @@ int main(){
     vec a = S.init_a();
     for(int i=0;i<5;i++){
         gamma = 7.;
-        B->best_params(myfile,myfile2,gamma,a,b,w,X);
+        //B->best_params(myfile,myfile2,gamma,a,b,w,X);
     }
 
-    //B->go_brute(myfile, myfile2);
+    B->go_brute(myfile, myfile2);
 
     //B->solve(myfile, myfile2);
     //Imp->langevin(myfile,myfile2);
