@@ -3,8 +3,7 @@
 
 using namespace arma;
 
-Bruteforce::Bruteforce(
-                       double s_hbar,
+Bruteforce::Bruteforce(double s_hbar,
                        double mass,
                        double s_omega,
                        double s_rho,
@@ -14,9 +13,10 @@ Bruteforce::Bruteforce(
                        double s_dt,
                        double sig,
                        int s_H,
-                       double s_M)
+                       double s_M,
+                       bool s_interact)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M)
+    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M,s_interact)
 {}
 
 double Bruteforce::energy_analytic(){
@@ -57,8 +57,10 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
     vec dwfa; vec dwfb; mat dwfw;
+    double totsumE = 0;
     for(i=0;i<mc;i++){
         //double bajsen = 0;
+        sumE = 0;
         for(j=0;j<M;j++){
 
             Xnew(j) = Xflex(j) + (doubleRNG(genMT64) - 0.5)*rho;
@@ -88,10 +90,12 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
             sum_d_wf_E_w += dwfw*localenergy;
 
         }
+        totsumE += sumE;
         //myfile4 << scientific << bommelom/N << endl;
+        //myfile2 << scientific << sumE/M << endl;
     }
 
-    double mean_E = sumE/(M*mc);
+    double mean_E = totsumE/(M*mc);
     vec mean_d_wf_a = sum_d_wf_a/(M*mc);
     vec mean_d_wf_E_a = sum_d_wf_E_a/(M*mc);
     vec mean_d_wf_b = sum_d_wf_b/(M*mc);
@@ -101,7 +105,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
-    myfile2 << scientific << sumE/M << endl;
+    myfile2 << scientific << mean_E << endl;
 
     cout << "Brute force finished! Hang in there <3" << endl;
 

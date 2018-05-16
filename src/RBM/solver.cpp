@@ -10,7 +10,8 @@ Solver::Solver(double s_hbar,
                double s_dt,
                double sig,
                int s_H,
-               int s_M){
+               int s_M,
+               bool s_interact){
     hbar = s_hbar;
     m = mass;
     omega = s_omega;
@@ -23,6 +24,7 @@ Solver::Solver(double s_hbar,
     sigma = sig;
     M = s_M;
     H = s_H;
+    interact = s_interact;
 }
 
 vec Solver::init_a(){
@@ -155,6 +157,27 @@ double Solver::u(double bj, const vec &X, const mat &wj){
     return bj + sum;
 }
 
+double Solver::calc_interaction(const vec &X){
+    double sum = 0;
+    double rij;
+    for(int i = 0; i < M-dim; i+=dim){
+
+        for(int j = i+dim; j < M; j+=dim){
+            //cout << "in ur mama" << endl;
+            for(int d = 0; d < dim; d++){
+                //cout << "i " << i + d << " " <<"j " << j+d << endl;
+                rij = X(i+d)-X(j+d);
+                rij *= rij;
+                sum += rij;
+            }
+        }
+    }
+    sum = 1/sqrt(sum);
+    //cout << sum << endl;
+    return sum;
+
+}
+
 vec Solver::grad_ai(const vec &X,const vec &a){
     vec grada = zeros(M);
     for(int i=0; i < M; i++){
@@ -225,7 +248,13 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
         I *= I + sigma2_*temp_I;
         energysum += I+II;
     }
-    return -0.5*(energysum - M*sigma2_) + 0.5*r2*omega*omega;
+    double E1 = 0;
+    if(interact){
+        E1 = calc_interaction(X);
+        //cout << "interacting" << endl;
+
+    }
+    return -0.5*(energysum - M*sigma2_) + 0.5*r2*omega*omega + E1;
 
 }
 

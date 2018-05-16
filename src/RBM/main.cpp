@@ -10,9 +10,9 @@ using namespace arma;
 int main(){
     vec dtvec = logspace<vec>(-4,0,51);
     double rho = 0.1;
-    int numpart = 1; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
-    int mc = 100000;//(1048576 + 1000) / numpart; // monte carlo cycles
-    int howmanyDs = 1;
+    int numpart = 2; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
+    int mc = 50000;//(1048576 + 1000) / numpart; // monte carlo cycles
+    int howmanyDs = 2;
     double hbar = 1;
     double mass = 1;
     double omega = 1;
@@ -22,17 +22,17 @@ int main(){
     double dt = 0.001;
     vec gammavec = {0.5, 1, 2, 3, 4};
     double gamma;
-
+    bool interactionswitch = true;
     ofstream myfile;
     //myfile.open("interaction_N10.dat");
     //for(int elem=0; elem<size(dtvec,0); elem++){
     //    if(alphavec(elem) != 0.5){
     //dtvec(elem);
-    Solver S(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM); // initialize Solver class
-    Bruteforce* B = new Bruteforce(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
-    Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
+    Solver S(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch); // initialize Solver class
+    Bruteforce* B = new Bruteforce(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch);
+    Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch);
     //Interact* Int = new Interact(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
-    Gibbs* G = new Gibbs(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
+    Gibbs* G = new Gibbs(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch);
     ofstream myfile2;
     ofstream myfile3;
     ofstream myfile4;
@@ -47,18 +47,21 @@ int main(){
     double learning = 0.2;
 
     //Imp->best_params(myfile,myfile2,learning,grad_cycle);
-    G->best_params(myfile,myfile2,learning,grad_cycle);
+    //G->best_params(myfile,myfile2,learning,grad_cycle);
 
     vec b = S.init_b();
     mat w = S.init_w();
     vec X = S.init_X();
     vec a = S.init_a();
+    /*
     for(int i=0;i<5;i++){
         gamma = gammavec(i);
         B->best_params(myfile,myfile2,gamma,a,b,w,X);
-    }
+    }*/
 
-    //B->go_brute(myfile, myfile2);
+
+    gamma = 2;
+    B->best_params(myfile,myfile2,gamma,a,b,w,X);
 
     //B->solve(myfile, myfile2);
     //Imp->langevin(myfile,myfile2);
@@ -71,8 +74,9 @@ int main(){
     delete Imp;
     delete B;
     //}
-    myfile.close();
     myfile2.close();
+    myfile.close();
+
     //}
     //}
 }
