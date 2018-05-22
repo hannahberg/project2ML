@@ -264,7 +264,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     myfile2 << scientific << bajsen/M << endl;
     }
 
-    cout << "Impsampt finished! The end is near <3" << endl;
+    //cout << "Impsampt finished! The end is near <3" << endl;
 
     /*
     double energy = energySum/(mc * N);
@@ -321,6 +321,7 @@ rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, of
                 k++;
             }
         }
+        cout << r << endl;
     }
     afile << a << endl;
     afile << b << endl;

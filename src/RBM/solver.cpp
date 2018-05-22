@@ -159,20 +159,22 @@ double Solver::u(double bj, const vec &X, const mat &wj){
 
 double Solver::calc_interaction(const vec &X){
     double sum = 0;
-    double rij;
+    double dr; double r2;
     for(int i = 0; i < M-dim; i+=dim){
         for(int j = i+dim; j < M; j+=dim){
             //cout << "in ur mama" << endl;
+            r2 = 0;
             for(int d = 0; d < dim; d++){
                 //cout << "i " << i + d << " " <<"j " << j+d << endl;
 //                cout << X(i+d) << " " <<X(j+d) << endl;
-                rij = X(i+d)-X(j+d);
-                rij *= rij;
-                sum += rij;
+                dr = X(i+d)-X(j+d);
+                dr *= dr;
+                r2 += dr;
             }
+            sum += 1.0/sqrt(r2);
         }
     }
-    sum = 1.0/sqrt(sum);
+    //sum = 1.0/(sqrt(sum));
 //    cout << "1/rij " << sum << endl;
     return sum;
 
@@ -288,7 +290,13 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
         I *= I + sigma2_*temp_I;
         energysum += 0.25*I+0.5*II;
     }
-    return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega;
+    double E1 = 0;
+    if(interact){
+        E1 = calc_interaction(X);
+        //cout << "interacting" << endl;
+
+    }
+    return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega + E1;
 }
 
 

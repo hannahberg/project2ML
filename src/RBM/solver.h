@@ -62,7 +62,7 @@ public:
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
 
-    double ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X);
+    double ELGibbs(const vec &a, const vec &b, const mat &w, const vec &X);
 
     const rowvec& getG1();
     const rowvec& getG2();
@@ -75,9 +75,9 @@ public:
 
     double drifti(const vec &b, const vec &X, const mat &w, int k);
 
-
-private:
     double calc_interaction(const vec &X);
+private:
+
     rowvec G1;
     rowvec G2;
 };
