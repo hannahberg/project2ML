@@ -4,6 +4,7 @@
 #include "impsamp.h"
 #include "gibbs.h"
 //#include "interact.h"
+#include <limits>
 using namespace std;
 using namespace arma;
 
@@ -22,7 +23,7 @@ int main(){
     double dt = 0.01;
     vec gammavec = {0.5, 1, 2, 3, 4};
     double gamma;
-    bool interactionswitch = true;
+    bool interactionswitch = false;
     ofstream myfile;
     //myfile.open("interaction_N10.dat");
     //for(int elem=0; elem<size(dtvec,0); elem++){
@@ -90,6 +91,7 @@ int main(){
         myfile2.close();
         myfile.close();
         delete Imp;
+        delete B;
     }
 
 //    double exact_vint = 1./sqrt(2) + 1./sqrt(18)+1./sqrt(8);

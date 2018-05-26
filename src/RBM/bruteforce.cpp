@@ -107,7 +107,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     myfile2 << scientific << mean_E << endl;
 
-    cout << "Brute force finished! Hang in there <3" << endl;
+    //cout << "Brute force finished! Hang in there <3" << endl;
 
     /*
     double energy = energySum/(mc * N);
