@@ -64,7 +64,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
         for(j=0;j<M;j++){
 
             Xnew(j) = Xflex(j) + (doubleRNG(genMT64) - 0.5)*rho;
-            A = (wavefunc(a,b,w,Xflex))/wavefunc(a,b,w,Xnew);
+            A = wavefunc(a,b,w,Xnew)/(wavefunc(a,b,w,Xflex));
             A *= A;
 
             if((A > 1) || (A > doubleRNG(genMT64))){// test if new position is more probable than random number between 0 and 1.
@@ -147,6 +147,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
         afile2 << setprecision(12) << mean_EL << endl;
+        cout << mean_EL << endl;
 
         //need to reconstruct
         //alphanow = alphamat.row(r+1);

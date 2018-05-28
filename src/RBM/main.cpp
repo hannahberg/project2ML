@@ -10,7 +10,7 @@ using namespace arma;
 
 int main(){
     vec dtvec = logspace<vec>(-4,0,51);
-    //double rho = 0.01;
+    double rho = 0.4;
     int numpart = 2; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
     int mc = 100000;//(1048576 + 1000) / numpart; // monte carlo cycles
     int howmanyDs = 2;
@@ -19,11 +19,11 @@ int main(){
     double omega = 1;
     double sig = 1;
     double numM = howmanyDs*numpart;
-    int hidden = 2;
+    int hidden = 4;
     double dt = 0.01;
     vec gammavec = {0.5, 1, 2, 3, 4};
-    double gamma;
-    bool interactionswitch = false;
+    double gamma = 0.1;
+    bool interactionswitch = true;
     ofstream myfile;
     //myfile.open("interaction_N10.dat");
     //for(int elem=0; elem<size(dtvec,0); elem++){
@@ -72,12 +72,9 @@ int main(){
 //    B->solve(a, b, w, X,myfile, myfile2);
 
     for(int i=0;i<1;i++){
-        double rho = 2.5;
-
         string filename ="newintdy_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs) + "_dt"+std::to_string(dt);
         myfile.open(filename + ".dat");
         myfile2.open(filename + "_energy.dat");
-        gamma = 0.2;
         Solver S(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch); // initialize Solver class
         vec b = S.init_b();
         mat w = S.init_w();
@@ -117,4 +114,9 @@ int main(){
 
     //}
     //}
+    // thermalize the grad
+    // vary spread
+    // vary learning rate
+    // vary hidden nodes, in non-interaction case H = 0 is best
+    // interaction -
 }

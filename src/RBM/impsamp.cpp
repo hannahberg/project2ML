@@ -228,7 +228,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
             Xnew(j) = X(j) + Ddt*F(j) + gaussianRNG(genMT64)*sdt;
             Fnew(j) = sigma_2*(-X(j)+a(j) + drifti(b,X,w,j));
 
-            A = (wavefunc(a,b,w,X))/wavefunc(a,b,w,Xnew);
+            A = wavefunc(a,b,w,Xnew)/(wavefunc(a,b,w,X));
             greens = 0.5*(F(j)+Fnew(j))*(Ddt05*(F(j)-Fnew(j))-Xnew(j)+X(j));
             greens = exp(greens);
             A *= A;
@@ -281,6 +281,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
+    cout << E_ << endl;
     myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
     myfile << scientific << E_ << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 1 << "  # impsamp" << endl;
     return E_;
