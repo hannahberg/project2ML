@@ -8,7 +8,10 @@ Solver::Solver(double s_omega,
                double s_dt,
                double sig,
                int s_H,
-               int s_M){
+               int s_M,
+               bool s_interact){
+    hbar = s_hbar;
+    m = mass;
     omega = s_omega;
     rho = s_rho;
     mc = s_mc;
@@ -18,12 +21,15 @@ Solver::Solver(double s_omega,
     sigma = sig;
     M = s_M;
     H = s_H;
+    interact = s_interact;
 }
+
+#define spread 0.02
 
 vec Solver::init_a(){
     static random_device rd;
     static mt19937_64 genMT64(rd());
-    static normal_distribution<double> gaussianRNG(0,0.001);
+    static normal_distribution<double> gaussianRNG(0,spread);
     vec a = zeros(M);
     for(int i=0; i<M; i++){
         a(i) = gaussianRNG(genMT64);
@@ -34,7 +40,7 @@ vec Solver::init_a(){
 vec Solver::init_b(){
     static random_device rd;
     static mt19937_64 genMT64(rd());
-    static normal_distribution<double> gaussianRNG(0,0.001);
+    static normal_distribution<double> gaussianRNG(0,spread);
     vec b = zeros(H);
     for(int j=0; j<H; j++){
         b(j) = gaussianRNG(genMT64);
@@ -45,7 +51,7 @@ vec Solver::init_b(){
 mat Solver::init_w(){
     static random_device rd;
     static mt19937_64 genMT64(rd());
-    static normal_distribution<double> gaussianRNG(0,0.001);
+    static normal_distribution<double> gaussianRNG(0,spread);
     mat w = zeros(M,H);
     for(int i=0; i<M; i++){
         for(int j=0; j<H; j++){
@@ -96,16 +102,16 @@ rowvec Solver::init_alpha(const vec &a, const vec &b, const mat &w){
 }
 
 
-double Solver::wavefunc(vec a, vec b, mat w, vec X){
+double Solver::wavefunc(const vec &a,const vec &b,const mat &w, const vec &X){
     double g = 0;
     double f = 1;
     for(int i=0;i<M;i++){
-        g += pow((X(i) - a(i)),2)/(2*sigma*sigma);
+        g += (X(i) - a(i))*(X(i) - a(i))/(2*sigma*sigma);
     }
     for(int j=0;j<H;j++){
         f*=(1 + exp(u(b(j), X, w.col(j))));
     }
-    double psi = exp(g)*f;
+    double psi = exp(-g)*f;
     return psi;
 }
 
@@ -150,6 +156,29 @@ double Solver::u(double bj, const vec &X, const mat &wj){
     return bj + sum;
 }
 
+double Solver::calc_interaction(const vec &X){
+    double sum = 0;
+    double dr; double r2;
+    for(int i = 0; i < M-dim; i+=dim){
+        for(int j = i+dim; j < M; j+=dim){
+            //cout << "in ur mama" << endl;
+            r2 = 0;
+            for(int d = 0; d < dim; d++){
+                //cout << "i " << i + d << " " <<"j " << j+d << endl;
+//                cout << X(i+d) << " " <<X(j+d) << endl;
+                dr = X(i+d)-X(j+d);
+                dr *= dr;
+                r2 += dr;
+            }
+            sum += 1.0/sqrt(r2);
+        }
+    }
+    //sum = 1.0/(sqrt(sum));
+//    cout << "1/rij " << sum << endl;
+    return sum;
+
+}
+
 vec Solver::grad_ai(const vec &X,const vec &a){
     vec grada = zeros(M);
     for(int i=0; i < M; i++){
@@ -163,9 +192,9 @@ vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
     double uj;
     for (int j=0; j < H; j++){
         uj = u(b(j),X,w.col(j));
-        gradb(j) = 1+exp(-uj);
+        gradb(j) = 1/(1+exp(-uj));
     }
-    return 1/gradb;
+    return gradb;
 }
 
 
@@ -192,7 +221,7 @@ const rowvec& Solver::getG2(){
 
 double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double energysum = 0;
-    double r2 = 0;
+    double Xm2 = 0;
     double temp_I = 0;
     double u_ = 0;
     double sigma2_ = 1/(sigma*sigma);
@@ -204,8 +233,8 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m));
-        r2 += Xm*Xm;
+        I = -(Xm-a(m))*sigma2_;
+        Xm2 += Xm*Xm;
         temp_I = 0;
         temp_II = 0;
         II = 0;
@@ -213,15 +242,75 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
             wmj = w(m,j);
             u_ = u(b(j), X, w.col(j));
             eu = exp(u_);
-            temp_I += wmj/(1+1/eu);
+            temp_I += wmj/(1+exp(-u_));
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
+        I += sigma2_*temp_I;
+        I *= I;
         II = sigma2_*sigma2_*temp_II;
-        I *= I + sigma2_*temp_I;
         energysum += I+II;
     }
-    return -0.5*(energysum - M*sigma2_) + 0.5*r2*omega*omega;
+    double E1 = 0;
+    if(interact){
+        E1 = calc_interaction(X);
+        //cout << "interacting" << endl;
 
+    }
+    return -0.5*(energysum - M*sigma2_) + 0.5*Xm2*omega*omega + E1;
+
+}
+
+double Solver::I(const vec &a, const vec &b, const mat &w,const vec &X){
+    double energysum = 0;
+    double Xm2 = 0;
+    double temp_I = 0;
+    double u_ = 0;
+    double sigma2_ = 1/(sigma*sigma);
+    double I = 0;
+    double wmj = 0;
+    double Xm = 0;
+    double aa = 0;
+    for(int m = 0; m < M; m++){
+        Xm = X(m);
+        I = -(Xm-a(m))*sigma2_;
+        temp_I = 0;
+        for(int j = 0; j < H; j++){
+            wmj = w(m,j);
+            u_ = u(b(j), X, w.col(j));
+            temp_I += wmj/(1+exp(-u_));
+        }
+        I += sigma2_*temp_I;
+        I *= I;
+
+        energysum += I;
+       cout << energysum << endl;
+    }
+
+    return energysum;
+}
+
+
+double Solver::II(const vec &b, const mat &w,const vec &X){
+    double energysum = 0;
+    double u_ = 0;
+    double sigma2_ = 1/(sigma*sigma);
+    double II = 0;
+    double temp_II = 0;
+    double eu = 0;
+    double wmj = 0;
+    for(int m = 0; m < M; m++){
+        temp_II = 0;
+        for(int j = 0; j < H; j++){
+            wmj = w(m,j);
+            u_ = u(b(j), X, w.col(j));
+            eu = exp(u_);
+            temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
+        }
+
+        II = sigma2_*sigma2_*temp_II;
+        energysum += II;
+    }
+    return energysum;
 }
 
 double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
@@ -238,7 +327,7 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m));
+        I = -(Xm-a(m))*sigma2_;
         r2 += Xm*Xm;
         temp_I = 0;
         temp_II = 0;
@@ -247,14 +336,22 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
             wmj = w(m,j);
             u_ = u(b(j), X, w.col(j));
             eu = exp(u_);
-            temp_I += wmj/(1+1/eu);
+            temp_I += wmj/(1+exp(-u_));
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
+
+        I += sigma2_*temp_I;
+        I *= I;
         II = sigma2_*sigma2_*temp_II;
-        I *= I + sigma2_*temp_I;
         energysum += 0.25*I+0.5*II;
     }
-    return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega;
+    double E1 = 0;
+    if(interact){
+        E1 = calc_interaction(X);
+        //cout << "interacting" << endl;
+
+    }
+    return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega + E1;
 }
 
 

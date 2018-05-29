@@ -3,8 +3,9 @@
 
 using namespace arma;
 
-Bruteforce::Bruteforce(
 
+Bruteforce::Bruteforce(double s_hbar,
+                       double mass,
                        double s_omega,
                        double s_rho,
                        int s_mc,
@@ -13,9 +14,10 @@ Bruteforce::Bruteforce(
                        double s_dt,
                        double sig,
                        int s_H,
-                       double s_M)
+                       double s_M,
+                       bool s_interact)
 :
-    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M)
+    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M,s_interact)
 {}
 
 double Bruteforce::energy_analytic(){
@@ -56,12 +58,14 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
     vec dwfa; vec dwfb; mat dwfw;
+    double totsumE = 0;
     for(i=0;i<mc;i++){
         //double bajsen = 0;
+        sumE = 0;
         for(j=0;j<M;j++){
 
             Xnew(j) = Xflex(j) + (doubleRNG(genMT64) - 0.5)*rho;
-            A = (wavefunc(a,b,w,Xflex))/wavefunc(a,b,w,Xnew);
+            A = wavefunc(a,b,w,Xnew)/(wavefunc(a,b,w,Xflex));
             A *= A;
 
             if((A > 1) || (A > doubleRNG(genMT64))){// test if new position is more probable than random number between 0 and 1.
@@ -87,10 +91,12 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
             sum_d_wf_E_w += dwfw*localenergy;
 
         }
+        totsumE += sumE;
         //myfile4 << scientific << bommelom/N << endl;
+        //myfile2 << scientific << sumE/M << endl;
     }
 
-    double mean_E = sumE/(M*mc);
+    double mean_E = totsumE/(M*mc);
     vec mean_d_wf_a = sum_d_wf_a/(M*mc);
     vec mean_d_wf_E_a = sum_d_wf_E_a/(M*mc);
     vec mean_d_wf_b = sum_d_wf_b/(M*mc);
@@ -100,9 +106,9 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
-    myfile2 << scientific << sumE/M << endl;
+    myfile2 << scientific << mean_E << endl;
 
-    cout << "Brute force finished! Hang in there <3" << endl;
+    //cout << "Brute force finished! Hang in there <3" << endl;
 
     /*
     double energy = energySum/(mc * N);
@@ -119,17 +125,17 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X){
     ofstream afile; ofstream afile2;
 
-    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H);
+    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("params_" + filename + ".dat");
     afile2.open("energy_" + filename + ".dat");
     rowvec alpha_best;
     int lol = 100;
     int MHMH = M+H +M*H;
-    //cout << "M+H+M*H" << MHMH<< endl;
+
     mat alphamat = zeros(lol,MHMH);
-    //cout << "alphamat" << alphamat.row(0) << endl;
+
     mat startalpha = mat(init_alpha(a,b,w));
-    startalpha.print();
+    //startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
@@ -142,6 +148,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
         afile2 << setprecision(12) << mean_EL << endl;
+        cout << mean_EL << endl;
 
         //need to reconstruct
         //alphanow = alphamat.row(r+1);

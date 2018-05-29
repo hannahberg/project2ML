@@ -15,7 +15,8 @@ using namespace arma;
 class Solver{
 public:
     clock_t start, end;
-    Solver(double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_M, int s_H);
+    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_M, int s_H, bool s_interact);
+    double hbar;
     int N; //number of particles
     double a_h0;
     double B;
@@ -27,9 +28,9 @@ public:
     int mc; //num MC cycles
     int dim;
     double rho; //position update parameter
-
+    bool interact;
     // functions in class
-    double wavefunc(vec a, vec b, mat w, vec X);
+    double wavefunc(const vec &a, const vec &b, const mat &w, const vec &X);
     double d_wavefunc(const mat &R, double alpha_);
     mat init_pos_gaus();
     mat distance_part(const mat &R);
@@ -58,7 +59,7 @@ public:
 
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
 
-    double ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X);
+    double ELGibbs(const vec &a, const vec &b, const mat &w, const vec &X);
 
     const rowvec& getG1();
     const rowvec& getG2();
@@ -71,7 +72,11 @@ public:
 
     double drifti(const vec &b, const vec &X, const mat &w, int k);
 
+    double calc_interaction(const vec &X);
+    double I(const vec &a, const vec &b, const mat &w,const vec &X);
 
+
+    double II(const vec &b, const mat &w, const vec &X);
 private:
 
     rowvec G1;
