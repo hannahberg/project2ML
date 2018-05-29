@@ -27,7 +27,7 @@ int main(){
 
     for(int i=0;i<1;i++){
         Solver S(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread); // initialize Solver class
-        string filename ="_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(hidden);
+        string filename ="N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(hidden);
 
         vec b = S.init_b(spread);
         mat w = S.init_w(spread);
