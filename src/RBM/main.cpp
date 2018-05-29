@@ -18,8 +18,9 @@ int main(){
     double sig = 1;
     int hidden = 4;
     double dt = 0.01;
-    vec gammavec = {0.5, 1, 2, 3, 4};
+    vec gammavec = {0.5, 1, 2, 3, 4}; //Gradient Decent Learning Rate
     double gamma = 0.1;
+    int gdc = 100; // Gradient Decent Cycles
     bool interactionswitch = true;
     ofstream myfile;
     //myfile.open("interaction_N10.dat");
@@ -71,10 +72,10 @@ int main(){
         vec X = S.init_X();
         vec a = S.init_a();
         Bruteforce* B = new Bruteforce(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
-        B->best_params(myfile,myfile2,gamma,a,b,w,X);
+        B->best_params(myfile,myfile2,gamma,a,b,w,X,gdc);
         Impsamp* Imp = new Impsamp(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
 //        B->solve(a, b, w, X,myfile, myfile2);
-        Imp->best_params(a, b, w, X,myfile,myfile2, gamma, 100);
+        Imp->best_params(a, b, w, X,myfile,myfile2, gamma, gdc);
         myfile2.close();
         myfile.close();
         delete Imp;
