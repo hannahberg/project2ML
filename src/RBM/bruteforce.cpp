@@ -119,8 +119,8 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
     ofstream afile; ofstream afile2;
 
     string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
-    afile.open("params_" + filename + ".dat");
-    afile2.open("energy_" + filename + ".dat");
+    afile.open("brute_params_" + filename + ".dat");
+    afile2.open("brute_energy_" + filename + ".dat");
     rowvec alpha_best;
     int MHMH = M+H +M*H;
 

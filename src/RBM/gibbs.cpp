@@ -137,7 +137,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
 
     int MHMH = M+H+M*H;
 
-    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
+    string filename ="gam" + std::to_string(gamma)+"_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
     afile.open("gibbs_params_" + filename + ".dat");
     afile2.open("gibbs_energy_" + filename + ".dat");
     mat alphamat = zeros(gdc,MHMH);
