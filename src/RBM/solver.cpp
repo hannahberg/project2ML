@@ -25,6 +25,7 @@ Solver::Solver(double s_omega,
     halfomega = 0.5*omega*omega;
     Msig = M*sig2;
     spread = s_spread;
+    Mmc = 1.0/(M*mc);
 }
 
 

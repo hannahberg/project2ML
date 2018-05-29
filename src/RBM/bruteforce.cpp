@@ -15,8 +15,10 @@ Bruteforce::Bruteforce(double s_omega,
                        bool s_interact,
                        double s_spread)
 :
-    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
-{M = s_N*s_dim;}
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread){
+    M = s_N*s_dim;
+    //Mmc = 1.0/(M*mc);
+}
 
 void Bruteforce::go_brute(std::ofstream &myfile, ofstream &myfile2){
     vec a = init_a(spread);
