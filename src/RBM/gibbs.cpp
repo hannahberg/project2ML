@@ -3,9 +3,7 @@
 
 using namespace arma;
 
-Gibbs::Gibbs(double s_hbar,
-                       double mass,
-                       double s_omega,
+Gibbs::Gibbs(          double s_omega,
                        double s_rho,
                        int s_mc,
                        int s_N,

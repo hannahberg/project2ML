@@ -34,6 +34,7 @@ int main(){
     //Impsamp* Imp = new Impsamp(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch);
     //Interact* Int = new Interact(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM);
     //Gibbs* G = new Gibbs(hbar, mass, omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, numM,interactionswitch);
+
     ofstream myfile2;
     ofstream myfile3;
     ofstream myfile4;
@@ -54,6 +55,7 @@ int main(){
     mat w = S.init_w();
     vec X = S.init_X();
     vec a = S.init_a();
+
 
     vec b = {0.000667904,0.00171753};
     mat w = {{0.00117447, 0.000381313},{-0.00166561, -0.000559385},{-0.000244628, -0.00130079}, {0.00103996, -0.00180347}};
@@ -118,5 +120,5 @@ int main(){
     // vary spread
     // vary learning rate
     // vary hidden nodes, in non-interaction case H = 0 is best
-    // interaction -
+    // interaction - 5 nodes?
 }
