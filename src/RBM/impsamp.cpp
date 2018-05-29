@@ -28,9 +28,6 @@ void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
 }
 
 double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin,std::ofstream &myfile, ofstream &myfile2){
-    double energy = energy_analytic();
-    myfile << "# dim = " << dim << ", N = " << N << ", dt = " << dt << " and mc = " << mc << endl << endl;
-    myfile << scientific << "# Theoretical Energy = " << energy << endl << endl;
 
     start=clock();
     static random_device rd;
@@ -98,7 +95,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
             sum_d_wf_E_w += dwfw*bajs;
        }
 
-    myfile2 << scientific << sumE/M << endl;
+    //myfile2 << scientific << sumE/M << endl;
     totsumE += sumE;
     totsumEsq += sumE*sumE;
     }
@@ -140,7 +137,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
 //    vec a = init_a();
     int MHMH = M+H+M*H;
 
-    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
+    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
     afile.open("imp_params" + filename + ".dat");
     afile2.open("imp_energy" + filename + ".dat");
 
