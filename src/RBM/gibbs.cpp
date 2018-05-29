@@ -18,9 +18,6 @@ Gibbs::Gibbs(double s_omega,
 {M = s_N*s_dim;}
 
 double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstream &myfile, ofstream &myfile2){
-    double energy = energy_analytic();
-    myfile << "# dim = " << dim << ", N = " << N << ", dt = " << dt << " and mc = " << mc << endl << endl;
-    myfile << scientific << "# Theoretical Energy = " << energy << endl << endl;
     double sumE = 0;
     start=clock();
     static random_device rd;
@@ -82,8 +79,10 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
         //cout << E_LGibbs << endl;
         sumE += E_LGibbs;
         newE += E_LGibbs;
+
         myfile2 << scientific << E_LGibbs << endl;
     }
+
     vec mean_d_wf_a = sum_d_wf_a/(M*mc);
     vec mean_d_wf_E_a = sum_d_wf_E_a/(M*mc);
     vec mean_d_wf_b = sum_d_wf_b/(M*mc);
@@ -93,8 +92,14 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
-    myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
-    myfile << scientific << sumE/(mc) << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 2 << "  # gibbs" << endl;
+    /*
+    double mean_E = totsumE/(M*mc);
+    double mean_E_sq = totsumEsq/(M*mc);
+    double var = mean_E_sq - mean_E*mean_E;
+    */
+
+    //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << endl; //sanity
+    myfile << scientific << sumE/mc << " " << scientific << "var" << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
     return sumE/mc;
 }
 
@@ -131,6 +136,7 @@ double Gibbs::random_mu_std(double mu){
 
 rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, int gdc){// gamma is learning rate <3
     ofstream afile; ofstream afile2;
+    double energy = energy_analytic();
 
 //    vec b = init_b();
 //    mat w = init_w();
@@ -141,6 +147,12 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H) + "_sig"+std::to_string(sigma);
     afile.open("gibbs_params_" + filename + ".dat");
     afile2.open("gibbs_energy_" + filename + ".dat");
+    myfile << "# dim" << "  N " << "  mc  " << " sigma "<< " Gibbs " << endl;
+    myfile << "  " << dim << "    " << N << " " << mc << " " << sigma  << endl;
+    myfile << "#" << endl;
+    myfile << scientific << "# Theoretical Energy = " << energy << endl;
+    myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << endl;
+
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
     startalpha.print();

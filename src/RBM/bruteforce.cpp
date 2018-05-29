@@ -28,9 +28,6 @@ void Bruteforce::go_brute(std::ofstream &myfile, ofstream &myfile2){
 }
 
 double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, std::ofstream &myfile, std::ofstream &myfile2){
-    double energy = energy_analytic();
-    myfile << "# dim = " << dim << ", N = " << N << ", dt = " << dt << " and mc = " << mc << endl << endl;
-    myfile << scientific << "# Theoretical Energy = " << energy << endl << endl;
 
     start=clock();
     static random_device rd;
@@ -53,8 +50,8 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
     vec dwfa; vec dwfb; mat dwfw;
     double totsumE = 0;
+    double totsumEsq = 0;
     for(i=0;i<mc;i++){
-        //double bajsen = 0;
         sumE = 0;
         for(j=0;j<M;j++){
 
@@ -86,11 +83,15 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 
         }
         totsumE += sumE;
+        totsumEsq += sumE*sumE;
         //myfile4 << scientific << bommelom/N << endl;
         //myfile2 << scientific << sumE/M << endl;
     }
 
     double mean_E = totsumE/(M*mc);
+    double mean_E_sq = totsumEsq/(M*mc);
+    double var = mean_E_sq - mean_E*mean_E;
+
     vec mean_d_wf_a = sum_d_wf_a/(M*mc);
     vec mean_d_wf_E_a = sum_d_wf_E_a/(M*mc);
     vec mean_d_wf_b = sum_d_wf_b/(M*mc);
@@ -102,26 +103,26 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     myfile2 << scientific << mean_E << endl;
 
-    //cout << "Brute force finished! Hang in there <3" << endl;
 
-    /*
-    double energy = energySum/(mc * N);
-    double totalenergy = energySum/mc;
-    double energySquared = energySquaredSum/(mc * N);
-    */
 
     end=clock();
-    myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl; //FIKSMEJ
-    myfile << scientific << mean_E << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 0 << "  # Analytic" << endl;
+    //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << "Acceptance" << endl; //sanity
+    myfile << scientific << mean_E << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
     return mean_E;
 }
 
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
     ofstream afile; ofstream afile2;
+    double energy = energy_analytic();
   
     string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("brute_params_" + filename + ".dat");
     afile2.open("brute_energy_" + filename + ".dat");
+    myfile << "# dim" << "  N " << "  mc  " << " rho "<< " Brute " << endl;
+    myfile << "  " << dim << "    " << N << " " << mc << " " << rho  << endl;
+    myfile << "#" << endl;
+    myfile << scientific << "# Theoretical Energy = " << energy << endl;
+    myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << "     Acceptance" << endl;
     rowvec alpha_best;
     int MHMH = M+H +M*H;
 

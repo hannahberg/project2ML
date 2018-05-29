@@ -38,8 +38,9 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     static normal_distribution<double> gaussianRNG(0.,0.5);
     static uniform_real_distribution<double> doubleRNG(0,1);
     double sdt = sqrt(dt);
-
-    double newE = 0;
+    double newE = 0; double sumE;
+    double totsumE = 0;
+    double totsumEsq = 0;
     vec X = Xin;
     vec Xnew = X;
     int i; int j;
@@ -51,14 +52,14 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double Ddt = D*dt;
     double Ddt05 = 0.5*D*dt;
     double sigma_2 = 2/(sigma*sigma);
-    double bajsen; double bajs; double A;
+    double bajs; double A;
     vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
     vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
     vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
     vec dwfa; vec dwfb; mat dwfw;
     for(i = 0; i < mc; i++){
-        bajsen = 0;
+        sumE = 0;
 
         for(j = 0; j < M; j++){
             Xnew(j) = X(j) + Ddt*F(j) + gaussianRNG(genMT64)*sdt;
@@ -82,7 +83,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
 
             bajs = E_L(a,b,w,X); // local energy
             newE += bajs; // calculate change in energy
-            bajsen += bajs;
+            sumE += bajs;
 
             dwfa = grad_ai(X,a);
             sum_d_wf_a += dwfa;
@@ -97,8 +98,13 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
             sum_d_wf_E_w += dwfw*bajs;
        }
 
-    myfile2 << scientific << bajsen/M << endl;
+    myfile2 << scientific << sumE/M << endl;
+    totsumE += sumE;
+    totsumEsq += sumE*sumE;
     }
+    double mean_E = totsumE/(M*mc);
+    double mean_E_sq = totsumEsq/(M*mc);
+    double var = mean_E_sq - mean_E*mean_E;
 
     //cout << "Impsamp finished! The end is near <3" << endl;
 
@@ -118,14 +124,15 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
     cout << E_ << endl;
-    myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
-    myfile << scientific << E_ << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 1 << "  # impsamp" << endl;
+    //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << "Acceptance" << endl; //sanity
+    myfile << scientific << E_ << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
     return E_;
 }
 
 rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
     // gamma is learning rate <3
     ofstream afile; ofstream afile2;
+    double energy = energy_analytic();
 
 //    vec b = init_b();
 //    mat w = init_w();
@@ -136,6 +143,13 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
     string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
     afile.open("imp_params" + filename + ".dat");
     afile2.open("imp_energy" + filename + ".dat");
+
+    myfile << "# dim" << "  N " << "  mc  " << " dt "<< " Impsamp " << endl;
+    myfile << "  " << dim << "    " << N << " " << mc << " " << dt  << endl;
+    myfile << "#" << endl;
+    myfile << scientific << "# Theoretical Energy = " << energy << endl;
+    myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << "     Acceptance" << endl;
+
 
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
