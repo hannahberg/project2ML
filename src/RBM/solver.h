@@ -15,10 +15,8 @@ using namespace arma;
 class Solver{
 public:
     clock_t start, end;
-    Solver(double s_hbar, double mass, double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_M, int s_H, bool s_interact);
-    double hbar;
+    Solver(double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_H, bool s_interact);
     int N; //number of particles
-    double a_h0;
     double B;
     double omega;
     double dt;
@@ -29,6 +27,7 @@ public:
     int dim;
     double rho; //position update parameter
     bool interact;
+
     // functions in class
     double wavefunc(const vec &a, const vec &b, const mat &w, const vec &X);
     double d_wavefunc(const mat &R, double alpha_);
@@ -42,43 +41,26 @@ public:
     vec init_X();
     vec init_X_gaus();
     mat init_w();
-
     double energy_analytic();
     double wavefunc_g(vec a, vec b, mat w, vec X);
-
     rowvec init_alpha(const vec &a, const vec &b, const mat &w);
-
-
     double u(double bj, const vec &X, const mat &wj);
-
     vec grad_ai(const vec &X,const vec &a);
-
     vec grad_bj(const vec &b,const vec &X, const mat &w);
-
     mat grad_wij(const vec &b,const vec &X, const mat &w);
-
     double E_L(const vec &a, const vec &b, const mat &w, const vec &X);
-
     double ELGibbs(const vec &a, const vec &b, const mat &w, const vec &X);
-
     const rowvec& getG1();
     const rowvec& getG2();
-
-
     void calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &mean_d_wf_w);
     void calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat &mean_d_wf_E_w);
-
     vec drift(const vec &b, const vec &X, const mat &w, const vec &a);
-
     double drifti(const vec &b, const vec &X, const mat &w, int k);
-
     double calc_interaction(const vec &X);
     double I(const vec &a, const vec &b, const mat &w,const vec &X);
-
-
     double II(const vec &b, const mat &w, const vec &X);
-private:
 
+private:
     rowvec G1;
     rowvec G2;
 };

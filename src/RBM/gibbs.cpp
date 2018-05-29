@@ -3,19 +3,18 @@
 
 using namespace arma;
 
-Gibbs::Gibbs(          double s_omega,
-                       double s_rho,
-                       int s_mc,
-                       int s_N,
-                       int s_dim,
-                       double s_dt,
-                       double sig,
-                       int s_H,
-                       double s_M,
-                       bool s_interact)
+Gibbs::Gibbs(double s_omega,
+             double s_rho,
+             int s_mc,
+             int s_N,
+             int s_dim,
+             double s_dt,
+             double sig,
+             int s_H,
+             bool s_interact)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M, s_interact)
-{}
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
+{M = s_N*s_dim;}
 
 double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstream &myfile, ofstream &myfile2){
     double energy = energy_analytic();
