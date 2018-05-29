@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iomanip>
 #include <math.h>
+#include <catch.hpp>
 //#include <QProgressBar>
 using namespace std;
 using namespace arma;
@@ -33,7 +34,7 @@ public:
     double rho; //position update parameter
     bool interact;
     // functions in class
-    double wavefunc(vec a, vec b, mat w, vec X);
+    double wavefunc(const vec &a, const vec &b, const mat &w, const vec &X);
     double d_wavefunc(const mat &R, double alpha_);
     mat init_pos_gaus();
     mat distance_part(const mat &R);
@@ -50,6 +51,7 @@ public:
     double wavefunc_g(vec a, vec b, mat w, vec X);
 
     rowvec init_alpha(const vec &a, const vec &b, const mat &w);
+    double calc_interaction(const vec &X);
 
 
     double u(double bj, const vec &X, const mat &wj);
@@ -77,7 +79,6 @@ public:
 
 
 private:
-    double calc_interaction(const vec &X);
     rowvec G1;
     rowvec G2;
 };

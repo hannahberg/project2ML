@@ -124,11 +124,11 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X){
     ofstream afile; ofstream afile2;
 
-    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H);
+    string filename ="gam" + std::to_string(gamma) + "rho" + std::to_string(rho) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H);
     afile.open("params_" + filename + ".dat");
     afile2.open("energy_" + filename + ".dat");
     rowvec alpha_best;
-    int lol = 100;
+    int lol = 500;
     int MHMH = M+H +M*H;
     //cout << "M+H+M*H" << MHMH<< endl;
     mat alphamat = zeros(lol,MHMH);
@@ -144,9 +144,10 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
 
         g1 = getG1();
         g2 = getG2();
-        alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1);
+        alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1)/mc;
         alphanow = alphamat.row(r+1);
-        afile2 << setprecision(12) << mean_EL << endl;
+        //afile2 << setprecision(12) << mean_EL << endl;
+        cout << setprecision(12) << mean_EL << endl;
 
         //need to reconstruct
         //alphanow = alphamat.row(r+1);
