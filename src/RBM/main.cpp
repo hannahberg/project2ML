@@ -3,7 +3,6 @@
 #include "bruteforce.h"
 #include "impsamp.h"
 #include "gibbs.h"
-//#include "interact.h"
 #include <limits>
 using namespace std;
 using namespace arma;
@@ -67,6 +66,7 @@ int main(){
         delete I;
         delete B;
         delete S;
+        // Illuminati!
 
         /*
         vec b = {0.000667904,0.00171753};
