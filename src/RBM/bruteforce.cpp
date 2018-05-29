@@ -4,9 +4,7 @@
 using namespace arma;
 
 
-Bruteforce::Bruteforce(double s_hbar,
-                       double mass,
-                       double s_omega,
+Bruteforce::Bruteforce(double s_omega,
                        double s_rho,
                        int s_mc,
                        int s_N,
@@ -14,11 +12,10 @@ Bruteforce::Bruteforce(double s_hbar,
                        double s_dt,
                        double sig,
                        int s_H,
-                       double s_M,
                        bool s_interact)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M,s_interact)
-{}
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
+{M = s_N*s_dim;}
 
 double Bruteforce::energy_analytic(){
     return 0.5 * N * dim;
