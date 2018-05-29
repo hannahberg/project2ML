@@ -132,9 +132,10 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
 //    vec X = init_X();
 //    vec a = init_a();
     int MHMH = M+H+M*H;
-    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
-    afile.open("imp_params_" + filename + ".dat");
-    afile2.open("imp_energy_" + filename + ".dat");
+
+    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
+    afile.open("imp_params" + filename + ".dat");
+    afile2.open("imp_energy" + filename + ".dat");
 
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
