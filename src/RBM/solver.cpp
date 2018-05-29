@@ -19,6 +19,10 @@ Solver::Solver(double s_omega,
     M = s_N*s_dim;
     H = s_H;
     interact = s_interact;
+    halfsigma = 1/(2*sigma*sigma);
+    sig2 = 1.0/(sigma*sigma);
+    halfomega = 0.5*omega*omega;
+    Msig = M*sig2;
 }
 
 #define spread 0.02
@@ -103,47 +107,18 @@ double Solver::wavefunc(const vec &a,const vec &b,const mat &w, const vec &X){
     double g = 0;
     double f = 1;
     for(int i=0;i<M;i++){
-        g += (X(i) - a(i))*(X(i) - a(i))/(2*sigma*sigma);
+        g += (X(i) - a(i))*(X(i) - a(i));
     }
     for(int j=0;j<H;j++){
         f*=(1 + exp(u(b(j), X, w.col(j))));
     }
-    double psi = exp(-g)*f;
+    double psi = exp(-g*halfsigma)*f;
     return psi;
 }
 
 double Solver::wavefunc_g(vec a, vec b, mat w, vec X){
     return sqrt(wavefunc(a,b,w,X));
 }
-
-/*
-mat Solver::init_pos_gaus(){
-    static random_device rd;
-    static mt19937_64 genMT64(rd());
-    static normal_distribution<double> gaussianRNG(0.,1);
-    double sdt = sqrt(dt);
-    int k; int l;
-    mat position = zeros(N,dim);
-    for(k=0;k<N;k++){
-        for(l=0;l<dim;l++){
-            position(k,l) = gaussianRNG(genMT64)*sdt;
-        }
-    }
-    return position;
-}
-mat Solver::distance_part(const mat &R){
-    mat rij = zeros(N,N);
-    for(int i = 0; i < N; i++){
-        for(int j = i+1; j < N; j++){
-            rij(i,j) = norm(R.row(i) - R.row(j));
-            rij(j,i) = rij(i,j);
-
-            //rij(i,j) = absdistance(R(i),R(j));
-        }
-    }
-    return rij;
-}
-*/
 
 double Solver::u(double bj, const vec &X, const mat &wj){
     double sum = 0;
@@ -181,7 +156,7 @@ vec Solver::grad_ai(const vec &X,const vec &a){
     for(int i=0; i < M; i++){
         grada(i) = X(i) - a(i);
     }
-    return grada/(sigma*sigma);
+    return grada*sig2;
 }
 
 vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
@@ -204,7 +179,7 @@ mat Solver::grad_wij(const vec &b,const vec &X, const mat &w){
             gradw(i,j) = X(i)/(1+exp(-uj));
         }
     }
-    return gradw/(sigma*sigma);
+    return gradw*sig2;
 }
 
 const rowvec& Solver::getG1(){
@@ -221,7 +196,6 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm2 = 0;
     double temp_I = 0;
     double u_ = 0;
-    double sigma2_ = 1/(sigma*sigma);
     double I = 0;
     double II = 0;
     double temp_II = 0;
@@ -230,7 +204,7 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m))*sigma2_;
+        I = -(Xm-a(m))*sig2;
         Xm2 += Xm*Xm;
         temp_I = 0;
         temp_II = 0;
@@ -242,9 +216,9 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
             temp_I += wmj/(1+exp(-u_));
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
-        I += sigma2_*temp_I;
+        I += sig2*temp_I;
         I *= I;
-        II = sigma2_*sigma2_*temp_II;
+        II = sig2*temp_II;
         energysum += I+II;
     }
     double E1 = 0;
@@ -253,34 +227,31 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
         //cout << "interacting" << endl;
 
     }
-    return -0.5*(energysum - M*sigma2_) + 0.5*Xm2*omega*omega + E1;
+    return -0.5*(energysum - Msig) + halfomega*Xm2+ E1;
 
 }
 
 double Solver::I(const vec &a, const vec &b, const mat &w,const vec &X){
     double energysum = 0;
-    double Xm2 = 0;
     double temp_I = 0;
     double u_ = 0;
-    double sigma2_ = 1/(sigma*sigma);
-    double I = 0;
+    double sumI = 0;
     double wmj = 0;
     double Xm = 0;
-    double aa = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m))*sigma2_;
+        sumI = -(Xm-a(m))*sig2;
         temp_I = 0;
         for(int j = 0; j < H; j++){
             wmj = w(m,j);
             u_ = u(b(j), X, w.col(j));
             temp_I += wmj/(1+exp(-u_));
         }
-        I += sigma2_*temp_I;
-        I *= I;
+        sumI += sig2*temp_I;
+        sumI *= sumI;
 
-        energysum += I;
-       cout << energysum << endl;
+        energysum += sumI;
+       //cout << energysum << endl;
     }
 
     return energysum;
@@ -290,8 +261,7 @@ double Solver::I(const vec &a, const vec &b, const mat &w,const vec &X){
 double Solver::II(const vec &b, const mat &w,const vec &X){
     double energysum = 0;
     double u_ = 0;
-    double sigma2_ = 1/(sigma*sigma);
-    double II = 0;
+    double sumII = 0;
     double temp_II = 0;
     double eu = 0;
     double wmj = 0;
@@ -304,18 +274,17 @@ double Solver::II(const vec &b, const mat &w,const vec &X){
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
 
-        II = sigma2_*sigma2_*temp_II;
-        energysum += II;
+        sumII = sig2*sig2*temp_II;
+        energysum += sumII;
     }
     return energysum;
 }
 
 double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
     double energysum = 0;
-    double r2 = 0;
+    double Xm2 = 0;
     double temp_I = 0;
     double u_ = 0;
-    double sigma2_ = 1/(sigma*sigma);
     double I = 0;
     double II = 0;
     double temp_II = 0;
@@ -324,8 +293,8 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m))*sigma2_;
-        r2 += Xm*Xm;
+        I = -(Xm-a(m))*sig2;
+        Xm2 += Xm*Xm;
         temp_I = 0;
         temp_II = 0;
         II = 0;
@@ -337,9 +306,9 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
 
-        I += sigma2_*temp_I;
+        I += sig2*temp_I;
         I *= I;
-        II = sigma2_*sigma2_*temp_II;
+        II = sig2*sig2*temp_II;
         energysum += 0.25*I+0.5*II;
     }
     double E1 = 0;
@@ -348,7 +317,7 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
         //cout << "interacting" << endl;
 
     }
-    return -0.5*(energysum - 0.5*M*sigma2_) + 0.5*r2*omega*omega + E1;
+    return -0.5*(energysum - 0.5*Msig) + halfomega*Xm2 + E1;
 }
 
 

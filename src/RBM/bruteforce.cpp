@@ -17,10 +17,6 @@ Bruteforce::Bruteforce(double s_omega,
     Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
 {M = s_N*s_dim;}
 
-double Bruteforce::energy_analytic(){
-    return 0.5 * N * dim;
-}
-
 void Bruteforce::go_brute(std::ofstream &myfile, ofstream &myfile2){
     vec a = init_a();
     vec b = init_b();
