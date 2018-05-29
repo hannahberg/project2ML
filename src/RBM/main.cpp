@@ -9,46 +9,20 @@ using namespace std;
 using namespace arma;
 
 int main(){
-    vec dtvec = logspace<vec>(-4,0,51);
     double rho = 0.4;
-    int numpart = 2; //CHANGE THE NAME!!!!!!!!!!!!!!!!!!!!!!!!!
-    int mc = 100000;//(1048576 + 1000) / numpart; // monte carlo cycles
+    int numpart = 2;
+    int mc = 100000;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
     int howmanyDs = 2;
     double omega = 1;
     double sig = 1;
     int hidden = 4;
     double dt = 0.01;
-    vec gammavec = {0.5, 1, 2, 3, 4}; //Gradient Decent Learning Rate
     double gamma = 0.1;
     int gdc = 100; // Gradient Decent Cycles
     bool interactionswitch = true;
-    //string filename ="test_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs);
-//    myfile.open(filename + ".dat");
-//    myfile2.open(filename + "_energy.dat");
 
-    /*
-    vec b = S.init_b();
-    mat w = S.init_w();
-    vec X = S.init_X();
-    vec a = S.init_a();
-
-
-    vec b = {0.000667904,0.00171753};
-    mat w = {{0.00117447, 0.000381313},{-0.00166561, -0.000559385},{-0.000244628, -0.00130079}, {0.00103996, -0.00180347}};
-    vec X = {1,2,3,4};
-    vec X = {-0.436988, -0.243587,0.22773,0.146376};
-    vec a ={0.000586069,0.000838821,0.000520396,0.000574091};
-    */
-    /*cout <<"b" << endl;
-    b.raw_print();
-    cout <<"w" << endl;
-    w.raw_print();
-    cout <<"X" << endl;
-    X.raw_print();
-    cout <<"a" << endl;
-    a.raw_print();*/
-//    B->solve(a, b, w, X,myfile, myfile2);
-
+    //vec gammavec = {0.5, 1, 2, 3, 4};
+    //vec dtvec = logspace<vec>(-4,0,51);
 
 
     for(int i=0;i<1;i++){
@@ -93,7 +67,17 @@ int main(){
         delete I;
         delete B;
         delete S;
+
+        /*
+        vec b = {0.000667904,0.00171753};
+        mat w = {{0.00117447, 0.000381313},{-0.00166561, -0.000559385},{-0.000244628, -0.00130079}, {0.00103996, -0.00180347}};
+        vec X = {1,2,3,4};
+        vec X = {-0.436988, -0.243587,0.22773,0.146376};
+        vec a ={0.000586069,0.000838821,0.000520396,0.000574091};
+        */
     }
+
+
 
 //    double exact_vint = 1./sqrt(2) + 1./sqrt(18)+1./sqrt(8);
 //    vec Xtry = {0, 0, 1, 1, 3, 3, 7,7};
