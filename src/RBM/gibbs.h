@@ -10,7 +10,7 @@ public:
     double sample_gibbs(const vec &a, const vec &b, const mat &w, std::ofstream &myfile, ofstream &myfile2);
     double get_mu(int i, vec const &hid, const mat &w);
     double random_mu_std(double mu);
-    rowvec best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, int lol);
+    rowvec best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, int gdc);
 
 };
 #endif
