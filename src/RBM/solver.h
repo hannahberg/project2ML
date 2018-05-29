@@ -21,9 +21,6 @@ public:
     double a_h0;
     double B;
     double omega;
-    double m;
-    double h;
-    double h2;
     double dt;
     double sigma;
     double M;

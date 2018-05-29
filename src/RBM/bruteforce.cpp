@@ -3,6 +3,7 @@
 
 using namespace arma;
 
+
 Bruteforce::Bruteforce(double s_hbar,
                        double mass,
                        double s_omega,
