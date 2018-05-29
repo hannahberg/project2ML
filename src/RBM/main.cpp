@@ -22,16 +22,6 @@ int main(){
     double gamma = 0.1;
     int gdc = 100; // Gradient Decent Cycles
     bool interactionswitch = true;
-    ofstream myfile;
-    //myfile.open("interaction_N10.dat");
-    //for(int elem=0; elem<size(dtvec,0); elem++){
-    //    if(alphavec(elem) != 0.5){
-    //dtvec(elem);
-
-    ofstream myfile2;
-    ofstream myfile3;
-    ofstream myfile4;
-    ofstream myfile5;
     //string filename ="test_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs);
 //    myfile.open(filename + ".dat");
 //    myfile2.open(filename + "_energy.dat");
@@ -59,44 +49,56 @@ int main(){
     a.raw_print();*/
 //    B->solve(a, b, w, X,myfile, myfile2);
 
+
+
     for(int i=0;i<1;i++){
-        string filename ="newintdy_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs) + "_dt"+std::to_string(dt);
-        myfile.open(filename + ".dat");
-        myfile2.open(filename + "_energy.dat");
         Solver S(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch); // initialize Solver class
+        string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
+
         vec b = S.init_b();
         mat w = S.init_w();
-        vec X = S.init_X();
+        vec X = S.init_X(); //GAUSSIAN IN IMPSAMP?
         vec a = S.init_a();
+
+        ofstream brutefile;
+        ofstream brutefile2;
+        brutefile.open("brute_" + filename + ".dat");
+        brutefile2.open("brute_" + filename + "_energy.dat");
         Bruteforce* B = new Bruteforce(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
-        B->best_params(myfile,myfile2,gamma,a,b,w,X,gdc);
-        Impsamp* Imp = new Impsamp(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
-//        B->solve(a, b, w, X,myfile, myfile2);
-        Imp->best_params(a, b, w, X,myfile,myfile2, gamma, gdc);
-        myfile2.close();
-        myfile.close();
-        delete Imp;
+        B->best_params(brutefile,brutefile2,gamma,a,b,w,X,gdc);
+        brutefile2.close();
+        brutefile.close();
+
+        ofstream impfile;
+        ofstream impfile2;
+        impfile.open("imp_" + filename + "_dt"+std::to_string(dt) + ".dat");
+        impfile2.open("imp_" + filename + "_dt"+std::to_string(dt) + "_energy.dat");
+        Impsamp* I = new Impsamp(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
+        I->best_params(impfile,impfile2,gamma,a,b,w,X,gdc);
+        impfile2.close();
+        impfile.close();
+
+        ofstream gibfile;
+        ofstream gibfile2;
+        gibfile.open("gibbs_" + filename + ".dat");
+        gibfile2.open("gibbs_" + filename + "_energy.dat");
+        Gibbs* G = new Gibbs(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
+        G->best_params(gibfile,gibfile2,gamma,a,b,w,gdc);
+        gibfile2.close();
+        gibfile.close();
+
+//       B->solve(a, b, w, X, myfile, myfile2);
+
+        delete G;
+        delete I;
         delete B;
+        delete S;
     }
 
 //    double exact_vint = 1./sqrt(2) + 1./sqrt(18)+1./sqrt(8);
 //    vec Xtry = {0, 0, 1, 1, 3, 3, 7,7};
 //    cout << scientific << exact_vint << endl;
 //    cout << scientific << S.calc_interaction(Xtry) << endl;
-
-    //B->best_params(myfile,myfile2,gamma,a,b,w,X);
-
-    //B->solve(myfile, myfile2);
-    //Imp->langevin(myfile,myfile2);
-
-    //G->sample_gibbs(myfile,myfile2);
-
-
-    //delete Int;
-//    delete G;
-//    delete Imp;
-//    delete B;
-    //}
 
 
     //}
