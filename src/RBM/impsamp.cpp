@@ -3,20 +3,18 @@
 
 using namespace arma;
 
-Impsamp::Impsamp(
-                       double s_omega,
-                       double s_rho,
-                       int s_mc,
-                       int s_N,
-                       int s_dim,
-                       double s_dt,
-                       double sig,
-                       int s_H,
-                       double s_M,
-                       bool s_interact)
+Impsamp::Impsamp(double s_omega,
+                 double s_rho,
+                 int s_mc,
+                 int s_N,
+                 int s_dim,
+                 double s_dt,
+                 double sig,
+                 int s_H,
+                 bool s_interact)
 :
-    Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M, s_interact)
-{}
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
+{M = s_N*s_dim;}
 
 
 void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
@@ -124,7 +122,8 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     return E_;
 }
 
-rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, ofstream &myfile2, double gamma, int lol){// gamma is learning rate <3
+rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, ofstream &myfile2, double gamma, int gdc){
+    // gamma is learning rate <3
     ofstream afile; ofstream afile2;
 
 //    vec b = init_b();
@@ -134,14 +133,14 @@ rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, of
     int MHMH = M+H+M*H;
     afile.open("imp_best_N2_D2.dat");
     afile2.open("imp_converge_N2_D2.dat");
-    mat alphamat = zeros(lol,MHMH);
+    mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
 //    startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
     rowvec g1; rowvec g2; rowvec alphanow;
-    for(int r=0;r<lol-1;r++){
+    for(int r=0;r<gdc-1;r++){
         mean_EL = langevin(a, b, w, X, myfile, myfile2);
 
         g1 = getG1();

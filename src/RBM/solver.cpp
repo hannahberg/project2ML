@@ -8,10 +8,7 @@ Solver::Solver(double s_omega,
                double s_dt,
                double sig,
                int s_H,
-               int s_M,
                bool s_interact){
-    hbar = s_hbar;
-    m = mass;
     omega = s_omega;
     rho = s_rho;
     mc = s_mc;
@@ -19,7 +16,7 @@ Solver::Solver(double s_omega,
     dim = s_dim;
     dt = s_dt;
     sigma = sig;
-    M = s_M;
+    M = s_N*s_dim;
     H = s_H;
     interact = s_interact;
     halfsigma = 1/(2*sigma*sigma);
