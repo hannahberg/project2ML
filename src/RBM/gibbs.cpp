@@ -128,25 +128,26 @@ double Gibbs::random_mu_std(double mu){
     return gaussianRNG(genMT64);
 }
 
-rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, int lol){// gamma is learning rate <3
+rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, int gdc){// gamma is learning rate <3
     ofstream afile; ofstream afile2;
 
-    vec b = init_b();
-    mat w = init_w();
-    vec a = init_a();
+//    vec b = init_b();
+//    mat w = init_w();
+//    vec a = init_a();
 
     int MHMH = M+H+M*H;
+
     string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
     afile.open("gibbs_params_" + filename + ".dat");
     afile2.open("gibbs_energy_" + filename + ".dat");
-    mat alphamat = zeros(lol,MHMH);
+    mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
     startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
     rowvec g1; rowvec g2; rowvec alphanow;
-    for(int r=0;r<lol-1;r++){
+    for(int r=0;r<gdc-1;r++){
         mean_EL = sample_gibbs(a, b, w, myfile, myfile2);
 
         g1 = getG1();
