@@ -36,9 +36,6 @@ int main(){
 //    myfile.open(filename + ".dat");
 //    myfile2.open(filename + "_energy.dat");
 
-    int grad_cycle = 1000;
-    double learning = 0.2;
-
     /*
     vec b = S.init_b();
     mat w = S.init_w();
