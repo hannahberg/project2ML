@@ -80,8 +80,11 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
         sumE += E_LGibbs;
         newE += E_LGibbs;
 
-        myfile2 << scientific << E_LGibbs << endl;
+        //myfile2 << scientific << E_LGibbs << endl;
     }
+
+    //HOW DO I VARIANCE?
+
 
     vec mean_d_wf_a = sum_d_wf_a/(M*mc);
     vec mean_d_wf_E_a = sum_d_wf_E_a/(M*mc);
@@ -93,8 +96,8 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
     /*
-    double mean_E = totsumE/(M*mc);
-    double mean_E_sq = totsumEsq/(M*mc);
+    double mean_E = sumE/(mc);
+    double mean_E_sq = sumEsq/(mc);
     double var = mean_E_sq - mean_E*mean_E;
     */
 
@@ -144,7 +147,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
 
     int MHMH = M+H+M*H;
 
-    string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H) + "_sig"+std::to_string(sigma);
+    string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H) + "_sig"+std::to_string(sigma);
     afile.open("gibbs_params_" + filename + ".dat");
     afile2.open("gibbs_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " sigma "<< " Gibbs " << endl;

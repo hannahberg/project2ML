@@ -103,7 +103,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
-    myfile2 << scientific << mean_E << endl;
+    //myfile2 << scientific << mean_E << endl;
 
 
 
@@ -117,7 +117,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
   
-    string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
+    string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("brute_params_" + filename + ".dat");
     afile2.open("brute_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " rho "<< " Brute " << endl;
