@@ -11,16 +11,17 @@ Impsamp::Impsamp(double s_omega,
                  double s_dt,
                  double sig,
                  int s_H,
-                 bool s_interact)
+                 bool s_interact,
+                 double s_spread)
 :
-    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
 {M = s_N*s_dim;}
 
 
 void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
-    vec a = init_a();
-    vec b = init_b();
-    mat w = init_w();
+    vec a = init_a(spread);
+    vec b = init_b(spread);
+    mat w = init_w(spread);
     vec X = init_X();
 
     langevin(a,b,w,X,myfile, myfile2);
@@ -131,9 +132,11 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
 //    vec X = init_X();
 //    vec a = init_a();
     int MHMH = M+H+M*H;
-    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
-    afile.open("imp_params_" + filename + ".dat");
-    afile2.open("imp_energy_" + filename + ".dat");
+
+    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
+    afile.open("imp_params" + filename + ".dat");
+    afile2.open("imp_energy" + filename + ".dat");
+
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
 //    startalpha.print();

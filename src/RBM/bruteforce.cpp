@@ -12,15 +12,16 @@ Bruteforce::Bruteforce(double s_omega,
                        double s_dt,
                        double sig,
                        int s_H,
-                       bool s_interact)
+                       bool s_interact,
+                       double s_spread)
 :
-    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
 {M = s_N*s_dim;}
 
 void Bruteforce::go_brute(std::ofstream &myfile, ofstream &myfile2){
-    vec a = init_a();
-    vec b = init_b();
-    mat w = init_w();
+    vec a = init_a(spread);
+    vec b = init_b(spread);
+    mat w = init_w(spread);
     vec X = init_X();
 
     solve(a,b,w,X,myfile, myfile2);
@@ -110,15 +111,15 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     */
 
     end=clock();
-    myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl;
+    myfile << "# Energy" << "     " << "Acceptance" << "   " << "CPU time" << "        " << "Solver" << endl; //FIKSMEJ
     myfile << scientific << mean_E << " " << scientific << accept/(mc*M) << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << "    " << 0 << "  # Analytic" << endl;
     return mean_E;
 }
 
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
     ofstream afile; ofstream afile2;
-
-    string filename ="gam" + std::to_string(gamma) + "_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
+  
+    string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("brute_params_" + filename + ".dat");
     afile2.open("brute_energy_" + filename + ".dat");
     rowvec alpha_best;

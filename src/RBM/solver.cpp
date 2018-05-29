@@ -8,7 +8,8 @@ Solver::Solver(double s_omega,
                double s_dt,
                double sig,
                int s_H,
-               bool s_interact){
+               bool s_interact,
+               double s_spread){
     omega = s_omega;
     rho = s_rho;
     mc = s_mc;
@@ -23,11 +24,11 @@ Solver::Solver(double s_omega,
     sig2 = 1.0/(sigma*sigma);
     halfomega = 0.5*omega*omega;
     Msig = M*sig2;
+    spread = s_spread;
 }
 
-#define spread 0.02
 
-vec Solver::init_a(){
+vec Solver::init_a(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
@@ -38,7 +39,7 @@ vec Solver::init_a(){
     return a;
 }
 
-vec Solver::init_b(){
+vec Solver::init_b(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
@@ -49,7 +50,7 @@ vec Solver::init_b(){
     return b;
 }
 
-mat Solver::init_w(){
+mat Solver::init_w(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);

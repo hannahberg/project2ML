@@ -19,25 +19,26 @@ int main(){
     double gamma = 0.1;
     int gdc = 100; // Gradient Decent Cycles
     bool interactionswitch = true;
+    double spread = 0.5;
 
     //vec gammavec = {0.5, 1, 2, 3, 4};
     //vec dtvec = logspace<vec>(-4,0,51);
 
 
     for(int i=0;i<1;i++){
-        Solver S(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch); // initialize Solver class
-        string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
+        Solver S(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread); // initialize Solver class
+        string filename ="_N" + std::to_string(numpart)+ "_d" + std::to_string(howmanyDs)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(hidden);
 
-        vec b = S.init_b();
-        mat w = S.init_w();
+        vec b = S.init_b(spread);
+        mat w = S.init_w(spread);
         vec X = S.init_X(); //GAUSSIAN IN IMPSAMP?
-        vec a = S.init_a();
+        vec a = S.init_a(spread);
 
         ofstream brutefile;
         ofstream brutefile2;
         brutefile.open("brute_" + filename + ".dat");
         brutefile2.open("brute_" + filename + "_energy.dat");
-        Bruteforce* B = new Bruteforce(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
+        Bruteforce* B = new Bruteforce(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
         B->best_params(brutefile,brutefile2,gamma,a,b,w,X,gdc);
         brutefile2.close();
         brutefile.close();
@@ -46,7 +47,7 @@ int main(){
         ofstream impfile2;
         impfile.open("imp_" + filename + "_dt"+std::to_string(dt) + ".dat");
         impfile2.open("imp_" + filename + "_dt"+std::to_string(dt) + "_energy.dat");
-        Impsamp* I = new Impsamp(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
+        Impsamp* I = new Impsamp(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
         I->best_params(impfile,impfile2,gamma,a,b,w,X,gdc);
         impfile2.close();
         impfile.close();
@@ -55,7 +56,7 @@ int main(){
         ofstream gibfile2;
         gibfile.open("gibbs_" + filename + ".dat");
         gibfile2.open("gibbs_" + filename + "_energy.dat");
-        Gibbs* G = new Gibbs(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch);
+        Gibbs* G = new Gibbs(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
         G->best_params(gibfile,gibfile2,gamma,a,b,w,gdc);
         gibfile2.close();
         gibfile.close();
@@ -65,7 +66,6 @@ int main(){
         delete G;
         delete I;
         delete B;
-        delete S;
         // Illuminati!
 
         /*
