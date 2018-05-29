@@ -60,6 +60,7 @@ public:
     double calc_interaction(const vec &X);
     double I(const vec &a, const vec &b, const mat &w,const vec &X);
     double II(const vec &b, const mat &w, const vec &X);
+    double Mmc;
 
 private:
     rowvec G1;
