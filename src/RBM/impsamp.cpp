@@ -11,16 +11,17 @@ Impsamp::Impsamp(double s_omega,
                  double s_dt,
                  double sig,
                  int s_H,
-                 bool s_interact)
+                 bool s_interact,
+                 double s_spread)
 :
-    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact)
+    Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
 {M = s_N*s_dim;}
 
 
 void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
-    vec a = init_a();
-    vec b = init_b();
-    mat w = init_w();
+    vec a = init_a(spread);
+    vec b = init_b(spread);
+    mat w = init_w(spread);
     vec X = init_X();
 
     langevin(a,b,w,X,myfile, myfile2);
@@ -122,7 +123,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     return E_;
 }
 
-rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, ofstream &myfile2, double gamma, int gdc){
+rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
     // gamma is learning rate <3
     ofstream afile; ofstream afile2;
 
@@ -131,8 +132,10 @@ rowvec Impsamp::best_params(vec a, vec b, mat w, vec X,std::ofstream &myfile, of
 //    vec X = init_X();
 //    vec a = init_a();
     int MHMH = M+H+M*H;
-    afile.open("imp_best_N2_D2.dat");
-    afile2.open("imp_converge_N2_D2.dat");
+    string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "gam" + std::to_string(gamma) + "_H" + std::to_string(H);
+    afile.open("imp_params_" + filename + ".dat");
+    afile2.open("imp_energy_" + filename + ".dat");
+
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
 //    startalpha.print();
