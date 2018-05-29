@@ -179,9 +179,7 @@ Impsamp::Impsamp(
     Solver(s_hbar, mass,s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_M, s_interact)
 {}
 
-double Impsamp::energy_analytic(){
-    return 0.5 * N * dim;
-}
+
 void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
     vec a = init_a();
     vec b = init_b();
@@ -264,7 +262,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     myfile2 << scientific << bajsen/M << endl;
     }
 
-    //cout << "Impsampt finished! The end is near <3" << endl;
+    //cout << "Impsamp finished! The end is near <3" << endl;
 
     /*
     double energy = energySum/(mc * N);

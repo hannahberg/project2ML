@@ -84,5 +84,9 @@ private:
 
     rowvec G1;
     rowvec G2;
+    double halfsigma;
+    double sig2;
+    double halfomega;
+    double Msig;
 };
 #endif
