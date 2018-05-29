@@ -4,7 +4,7 @@
 
 class Gibbs: public Solver{
 public:
-    Gibbs(double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_H, bool s_interact);
+    Gibbs(double s_omega, double s_rho, int s_mc, int s_N, int s_dim, double s_dt, double sig, int s_H, bool s_interact, double s_spread);
     vec init_h_bool();
     double prob(const vec& X, double bj, const mat &wj);
     double sample_gibbs(const vec &a, const vec &b, const mat &w, std::ofstream &myfile, ofstream &myfile2);
