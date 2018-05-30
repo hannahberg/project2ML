@@ -80,7 +80,7 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
         sumE += E_LGibbs;
         newE += E_LGibbs;
 
-        //myfile2 << scientific << E_LGibbs << endl;
+        myfile2 << scientific << E_LGibbs << endl;
     }
 
     //HOW DO I VARIANCE?
@@ -170,7 +170,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
         g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
-        afile2 << setprecision(12) << mean_EL << endl;
+        //afile2 << setprecision(12) << mean_EL << endl;
 
         //need to reconstruct
         int k = 0;

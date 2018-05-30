@@ -95,7 +95,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
             sum_d_wf_E_w += dwfw*bajs;
        }
 
-    //myfile2 << scientific << sumE/M << endl;
+    myfile2 << scientific << sumE/M << endl;
     totsumE += sumE;
     totsumEsq += sumE*sumE;
     }
@@ -139,7 +139,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
 
     string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
     afile.open("imp_params" + filename + ".dat");
-    afile2.open("imp_energy" + filename + ".dat");
+    //afile2.open("imp_energy" + filename + ".dat");
 
     myfile << "# dim" << "  N " << "  mc  " << " dt "<< " Impsamp " << endl;
     myfile << "  " << dim << "    " << N << " " << mc << " " << dt  << endl;
@@ -162,7 +162,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
         g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
-        afile2 << setprecision(12) << mean_EL << endl;
+        //afile2 << setprecision(12) << mean_EL << endl;
 
         //need to reconstruct
         int k = 0;
@@ -179,7 +179,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
     afile << b << endl;
     afile << w << endl;
     afile.close();
-    afile2.close();
+    //afile2.close();
     return alphanow;
 }
 
