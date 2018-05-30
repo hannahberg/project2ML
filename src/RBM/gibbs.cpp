@@ -36,10 +36,10 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     //vec b = init_b()*0.001;
     vec X = init_X();
 
-    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
-    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
-    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
-    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+    vec sum_d_wf(M); vec sum_d_wf_E(M);
+    vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
+    vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
+    mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
     vec dwfa; vec dwfb; mat dwfw;
     for(int k = 0; k < mc; k++){
 
@@ -167,8 +167,8 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     for(int r=0;r<gdc-1;r++){
         mean_EL = sample_gibbs(a, b, w, myfile, myfile2);
 
-        g1 = getG1();
-        g2 = getG2();
+        g1 = 0.5*getG1();
+        g2 = 0.5*getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
         //afile2 << setprecision(12) << mean_EL << endl;

@@ -33,7 +33,8 @@ vec Solver::init_a(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
-    vec a = zeros(M);
+//    vec a = zeros(M);
+    vec a(M);
     for(int i=0; i<M; i++){
         a(i) = gaussianRNG(genMT64);
     }
@@ -44,7 +45,8 @@ vec Solver::init_b(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
-    vec b = zeros(H);
+//    vec b = zeros(H);
+    vec b(H);
     for(int j=0; j<H; j++){
         b(j) = gaussianRNG(genMT64);
     }
@@ -55,7 +57,8 @@ mat Solver::init_w(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
-    mat w = zeros(M,H);
+//    mat w = zeros(M,H);
+    mat w(M,H);
     for(int i=0; i<M; i++){
         for(int j=0; j<H; j++){
             w(i,j) = gaussianRNG(genMT64);
@@ -153,15 +156,16 @@ double Solver::calc_interaction(const vec &X){
 }
 
 vec Solver::grad_ai(const vec &X,const vec &a){
-    vec grada = zeros(M);
-    for(int i=0; i < M; i++){
-        grada(i) = X(i) - a(i);
-    }
-    return grada*sig2;
+//    vec grada = X - a;
+//    for(int i=0; i < M; i++){
+//        grada(i) = X(i) - a(i);
+//    }
+    return (X - a)*sig2;
 }
 
 vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
-    vec gradb = zeros(H);
+//    vec gradb = zeros(H);
+    vec gradb(H);
     double uj;
     for (int j=0; j < H; j++){
         uj = u(b(j),X,w.col(j));
@@ -172,7 +176,8 @@ vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
 
 
 mat Solver::grad_wij(const vec &b,const vec &X, const mat &w){
-    mat gradw = zeros(M,H);
+//    mat gradw = zeros(M,H);
+    mat gradw(M,H);
     double uj;
     for(int i=0; i < M; i++){
         for (int j=0; j < H; j++){
@@ -197,19 +202,19 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm2 = 0;
     double temp_I = 0;
     double u_ = 0;
-    double I = 0;
-    double II = 0;
+    double sumI = 0;
+    double sumII = 0;
     double temp_II = 0;
     double eu = 0;
     double wmj = 0;
     double Xm = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m))*sig2;
+        sumI = -(Xm-a(m))*sig2;
         Xm2 += Xm*Xm;
         temp_I = 0;
         temp_II = 0;
-        II = 0;
+        sumII = 0;
         for(int j = 0; j < H; j++){
             wmj = w(m,j);
             u_ = u(b(j), X, w.col(j));
@@ -217,10 +222,10 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
             temp_I += wmj/(1+exp(-u_));
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
-        I += sig2*temp_I;
-        I *= I;
-        II = sig2*temp_II;
-        energysum += I+II;
+        sumI += sig2*temp_I;
+        sumI *= sumI;
+        sumII = sig2*temp_II;
+        energysum += sumI+sumII;
     }
     double E1 = 0;
     if(interact){
@@ -286,19 +291,19 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
     double Xm2 = 0;
     double temp_I = 0;
     double u_ = 0;
-    double I = 0;
-    double II = 0;
+    double sumI = 0;
+    double sumII = 0;
     double temp_II = 0;
     double eu = 0;
     double wmj = 0;
     double Xm = 0;
     for(int m = 0; m < M; m++){
         Xm = X(m);
-        I = -(Xm-a(m))*sig2;
+        sumI = -(Xm-a(m))*sig2;
         Xm2 += Xm*Xm;
         temp_I = 0;
         temp_II = 0;
-        II = 0;
+        sumII = 0;
         for(int j = 0; j < H; j++){
             wmj = w(m,j);
             u_ = u(b(j), X, w.col(j));
@@ -307,10 +312,10 @@ double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
             temp_II += wmj*wmj*eu/((1+eu)*(1+eu));
         }
 
-        I += sig2*temp_I;
-        I *= I;
-        II = sig2*sig2*temp_II;
-        energysum += 0.25*I+0.5*II;
+        sumI += sig2*temp_I;
+        sumI *= sumI;
+        sumII = sig2*sig2*temp_II;
+        energysum += 0.25*sumI + 0.5*sumII;
     }
     double E1 = 0;
     if(interact){
@@ -337,8 +342,8 @@ vec Solver::drift(const vec &b, const vec &X, const mat &w, const vec &a){
     for(int i = 0; i < M; i++){
         F(i) += - X(i)+ a(i) + drifti(b,X,w,i);
     }
-    F = (2/(sigma*sigma))*F;
-    return F;
+//    F = (2/(sigma*sigma))*F;
+    return halfsigma*F;
 }
 
 

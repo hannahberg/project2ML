@@ -50,10 +50,15 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double Ddt05 = 0.5*D*dt;
     double sigma_2 = 2/(sigma*sigma);
     double bajs; double A;
-    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
-    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
-    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
-    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+//    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
+//    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
+//    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
+//    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+    vec sum_d_wf(M); vec sum_d_wf_E(M);
+    vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
+    vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
+    mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
+
     vec dwfa; vec dwfb; mat dwfw;
     for(i = 0; i < mc; i++){
         sumE = 0;
@@ -148,7 +153,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
     myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << "     Acceptance" << endl;
 
 
-    mat alphamat = zeros(gdc,MHMH);
+    mat alphamat(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
 //    startalpha.print();
     alphamat.row(0) = startalpha;
