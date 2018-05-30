@@ -50,14 +50,15 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double Ddt05 = 0.5*D*dt;
     double sigma_2 = 2/(sigma*sigma);
     double bajs; double A;
-//    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
-//    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
-//    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
-//    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
-    vec sum_d_wf(M); vec sum_d_wf_E(M);
+    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
+    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
+    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
+    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+/*    vec sum_d_wf(M); vec sum_d_wf_E(M);
     vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
     vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
     mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
+    */
 
     vec dwfa; vec dwfb; mat dwfw;
     for(i = 0; i < mc; i++){
@@ -106,7 +107,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     }
     double mean_E = totsumE*Mmc;
     double mean_E_sq = totsumEsq*Mmc;
-    double var = mean_E_sq - mean_E*mean_E;
+    double var = (mean_E_sq - mean_E*mean_E)*Mmc;
 
     //cout << "Impsamp finished! The end is near <3" << endl;
 

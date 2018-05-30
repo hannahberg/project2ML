@@ -10,7 +10,7 @@ using namespace arma;
 int main(){
     double rho = 0.4;
     int numpart = 2;
-    int mc = 1000;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
+    int mc = 100000;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
     int howmanyDs = 2;
     double omega = 1;
     double sig = 1;
@@ -19,7 +19,7 @@ int main(){
     double gamma = 0.1;
     int gdc = 10; // Gradient Decent Cycles
     bool interactionswitch = false;
-    double spread = 0.05;
+    double spread = 0.001;
 
     //vec gammavec = {0.5, 1, 2, 3, 4};
     //vec dtvec = logspace<vec>(-4,0,51);
