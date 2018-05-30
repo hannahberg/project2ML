@@ -114,12 +114,14 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 }
 
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
+    cout << "Brute force best force!" << endl;
+
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
   
     string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("brute_params_" + filename + ".dat");
-    afile2.open("brute_energy_" + filename + ".dat");
+    //afile2.open("brute_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " rho "<< " Brute " << endl;
     myfile << "  " << dim << "    " << N << " " << mc << " " << rho  << endl;
     myfile << "#" << endl;
@@ -144,11 +146,11 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
         //afile2 << setprecision(12) << mean_EL << endl;
-        cout << mean_EL << endl;
+        //cout << mean_EL << endl;
 
-        //need to reconstruct
+
         //alphanow = alphamat.row(r+1);
-        int k = 0;
+        int k = 0;//need to reconstruct the vectors
         for(int i=0;i<M;i++){
             for(int j=0;j<H;j++){
                 b(j) = alphanow(j+M);
@@ -158,8 +160,9 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         }
 
             //afile << i << endl; //checking if it oscillates in the bottom
+        cout << r << endl;
         }
-    afile2.close();
+    //afile2.close();
     alpha_best = alphanow;
     afile <<  setprecision(12)  << a << endl;
     afile <<  setprecision(12) << b << endl;
