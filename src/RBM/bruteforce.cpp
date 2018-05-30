@@ -46,10 +46,14 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     double accept = 0;
     double localenergy;
     double A;
-    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
-    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
-    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
-    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+//    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
+//    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
+//    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
+//    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+    vec sum_d_wf(M); vec sum_d_wf_E(M);
+    vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
+    vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
+    mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
     vec dwfa; vec dwfb; mat dwfw;
     double totsumE = 0;
     double totsumEsq = 0;
@@ -130,8 +134,8 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
     rowvec alpha_best;
     int MHMH = M+H +M*H;
 
-    mat alphamat = zeros(gdc,MHMH);
-
+//    mat alphamat = zeros(gdc,MHMH);
+    mat alphamat(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
     //startalpha.print();
     alphamat.row(0) = startalpha;
