@@ -19,6 +19,7 @@ Gibbs::Gibbs(double s_omega,
 
 double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstream &myfile, ofstream &myfile2){
     double sumE = 0;
+    double sumEsq = 0;
     start=clock();
     static random_device rd;
     static mt19937_64 genMT64(rd());
@@ -35,11 +36,18 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     //a = init_a();
     //vec b = init_b()*0.001;
     vec X = init_X();
-
+/*
     vec sum_d_wf(M); vec sum_d_wf_E(M);
     vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
     vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
     mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
+*/
+
+    vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
+    vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
+    vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
+    mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
+
     vec dwfa; vec dwfb; mat dwfw;
     for(int k = 0; k < mc; k++){
 
@@ -78,31 +86,31 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
         sum_d_wf_E_w += dwfw*E_LGibbs;
         //cout << E_LGibbs << endl;
         sumE += E_LGibbs;
+        sumEsq += E_LGibbs*E_LGibbs;
         newE += E_LGibbs;
 
         myfile2 << scientific << E_LGibbs << endl;
     }
 
-    //HOW DO I VARIANCE?
 
 
-    vec mean_d_wf_a = sum_d_wf_a*Mmc;
-    vec mean_d_wf_E_a = sum_d_wf_E_a*Mmc;
-    vec mean_d_wf_b = sum_d_wf_b*Mmc;
-    vec mean_d_wf_E_b = sum_d_wf_E_b*Mmc;
-    mat mean_d_wf_w = sum_d_wf_w*Mmc;
-    mat mean_d_wf_E_w = sum_d_wf_E_w*Mmc;
+    vec mean_d_wf_a = sum_d_wf_a/mc;
+    vec mean_d_wf_E_a = sum_d_wf_E_a/mc;
+    vec mean_d_wf_b = sum_d_wf_b/mc;
+    vec mean_d_wf_E_b = sum_d_wf_E_b/mc;
+    mat mean_d_wf_w = sum_d_wf_w/mc;
+    mat mean_d_wf_E_w = sum_d_wf_E_w/mc;
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
-    /*
+
     double mean_E = sumE/(mc);
     double mean_E_sq = sumEsq/(mc);
-    double var = mean_E_sq - mean_E*mean_E;
-    */
+    double var = (mean_E_sq - mean_E*mean_E)/(mc);
+
 
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << endl; //sanity
-    myfile << scientific << sumE/mc << " " << scientific << "var" << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
+    myfile << scientific << sumE/mc << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
     return sumE/mc;
 }
 
