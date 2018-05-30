@@ -10,7 +10,7 @@ using namespace arma;
 int main(){
     double rho = 0.4;
     int numpart = 2;
-    int mc = 100000;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
+    int mc = 100;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
     int howmanyDs = 2;
     double omega = 1;
     double sig = 1;
