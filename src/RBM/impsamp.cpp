@@ -99,8 +99,8 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     totsumE += sumE;
     totsumEsq += sumE*sumE;
     }
-    double mean_E = totsumE/(M*mc);
-    double mean_E_sq = totsumEsq/(M*mc);
+    double mean_E = totsumE*Mmc;
+    double mean_E_sq = totsumEsq*Mmc;
     double var = mean_E_sq - mean_E*mean_E;
 
     //cout << "Impsamp finished! The end is near <3" << endl;
@@ -111,12 +111,12 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double energySquared = energySquaredSum/(mc * N);
     */
     double E_ = newE/(mc*M);
-    vec mean_d_wf_a = sum_d_wf_a/(M*mc);
-    vec mean_d_wf_E_a = sum_d_wf_E_a/(M*mc);
-    vec mean_d_wf_b = sum_d_wf_b/(M*mc);
-    vec mean_d_wf_E_b = sum_d_wf_E_b/(M*mc);
-    mat mean_d_wf_w = sum_d_wf_w/(M*mc);
-    mat mean_d_wf_E_w = sum_d_wf_E_w/(M*mc);
+    vec mean_d_wf_a = sum_d_wf_a*Mmc;
+    vec mean_d_wf_E_a = sum_d_wf_E_a*Mmc;
+    vec mean_d_wf_b = sum_d_wf_b*Mmc;
+    vec mean_d_wf_E_b = sum_d_wf_E_b*Mmc;
+    mat mean_d_wf_w = sum_d_wf_w*Mmc;
+    mat mean_d_wf_E_w = sum_d_wf_E_w*Mmc;
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
