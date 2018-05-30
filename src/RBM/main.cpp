@@ -10,14 +10,14 @@ using namespace arma;
 int main(){
     double rho = 0.4;
     int numpart = 2;
-    int mc = 100000;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
+    int mc = 100;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
     int howmanyDs = 2;
     double omega = 1;
     double sig = 1;
     int hidden = 4;
     double dt = 0.01;
     double gamma = 0.1;
-    int gdc = 100; // Gradient Decent Cycles
+    int gdc = 10; // Gradient Decent Cycles
     bool interactionswitch = false;
     double spread = 0.05;
 

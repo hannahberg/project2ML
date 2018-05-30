@@ -114,8 +114,7 @@ double Solver::wavefunc(const vec &a,const vec &b,const mat &w, const vec &X){
     for(int j=0;j<H;j++){
         f*=(1 + exp(u(b(j), X, w.col(j))));
     }
-    double psi = exp(-g*halfsigma)*f;
-    return psi;
+    return exp(-g*halfsigma)*f;
 }
 
 double Solver::wavefunc_g(vec a, vec b, mat w, vec X){
