@@ -103,7 +103,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
 
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
-    //myfile2 << scientific << mean_E << endl;
+    myfile2 << scientific << mean_E << endl;
 
 
 
@@ -143,7 +143,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
-        afile2 << setprecision(12) << mean_EL << endl;
+        //afile2 << setprecision(12) << mean_EL << endl;
         cout << mean_EL << endl;
 
         //need to reconstruct
