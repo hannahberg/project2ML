@@ -90,8 +90,8 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
         //myfile2 << scientific << sumE/M << endl;
     }
 
-    double mean_E = totsumE/(M*mc);
-    double mean_E_sq = totsumEsq/(M*mc);
+    double mean_E = totsumE*Mmc;
+    double mean_E_sq = totsumEsq*Mmc;
     double var = mean_E_sq - mean_E*mean_E;
 
     vec mean_d_wf_a = sum_d_wf_a*Mmc;
