@@ -120,14 +120,14 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
-    cout << E_ << endl;
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << "Acceptance" << endl; //sanity
     myfile << scientific << E_ << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
     return E_;
 }
 
 rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
-    // gamma is learning rate <3
+    cout << "Most important sampling of all!" << endl;
+
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
 

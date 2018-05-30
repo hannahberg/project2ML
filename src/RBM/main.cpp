@@ -17,7 +17,7 @@ int main(){
     int hidden = 4;
     double dt = 0.01;
     double gamma = 0.1;
-    int gdc = 100; // Gradient Decent Cycles
+    int gdc = 10; // Gradient Decent Cycles
     bool interactionswitch = false;
     double spread = 0.05;
 

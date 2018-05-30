@@ -138,6 +138,7 @@ double Gibbs::random_mu_std(double mu){
 }
 
 rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, int gdc){// gamma is learning rate <3
+    cout << "All about that Gibbs..." << endl;
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
 
@@ -149,7 +150,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
 
     string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H) + "_sig"+std::to_string(sigma);
     afile.open("gibbs_params_" + filename + ".dat");
-    afile2.open("gibbs_energy_" + filename + ".dat");
+    //afile2.open("gibbs_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " sigma "<< " Gibbs " << endl;
     myfile << "  " << dim << "    " << N << " " << mc << " " << sigma  << endl;
     myfile << "#" << endl;
@@ -158,7 +159,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
 
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
-    startalpha.print();
+    //startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
@@ -181,12 +182,12 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
                 k++;
             }
         }
-        cout << "_" << endl;
+        cout << r << endl;
     }
     afile << a << endl;
     afile << b << endl;
     afile << w << endl;
-    afile2.close();
+    //afile2.close();
     afile.close();
 
     return alphanow;
