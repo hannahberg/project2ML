@@ -58,7 +58,7 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
         for(i = 0; i < M; i++){ // finding the ideal positions X(i)
             double mu = get_mu(i,hid,w);
             //cout << "lol" << endl;
-            X(i) = random_mu_std(mu);
+            X(i) = random_mu_std(mu + a(i));
 
         }
 
@@ -66,52 +66,55 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
             Pj = prob(X,b(j),w.col(j));
             //cout << "lol" << endl;
             if(doubleRNG(genMT64)<=Pj){
-                hid(j) = 1;
-                accept += 1;
-            } else {
                 hid(j) = 0;
+//                accept += 1;
+            } else {
+                hid(j) = 1;
             }
+
+            E_LGibbs = ELGibbs(a,b,w,X);
+            dwfa = grad_ai(X,a);
+            sum_d_wf_a += dwfa;
+            sum_d_wf_E_a += dwfa*E_LGibbs;
+
+            dwfb = grad_bj(b,X,w);
+            sum_d_wf_b += dwfb;
+            sum_d_wf_E_b += dwfb*E_LGibbs;
+
+            dwfw = grad_wij(b,X,w);
+            sum_d_wf_w += dwfw;
+            sum_d_wf_E_w += dwfw*E_LGibbs;
+            //cout << E_LGibbs << endl;
+            sumE += E_LGibbs;
+            sumEsq += E_LGibbs*E_LGibbs;
+            newE += E_LGibbs;
         }
-        E_LGibbs = ELGibbs(a,b,w,X);
-        dwfa = grad_ai(X,a);
-        sum_d_wf_a += dwfa;
-        sum_d_wf_E_a += dwfa*E_LGibbs;
 
-        dwfb = grad_bj(b,X,w);
-        sum_d_wf_b += dwfb;
-        sum_d_wf_E_b += dwfb*E_LGibbs;
 
-        dwfw = grad_wij(b,X,w);
-        sum_d_wf_w += dwfw;
-        sum_d_wf_E_w += dwfw*E_LGibbs;
-        //cout << E_LGibbs << endl;
-        sumE += E_LGibbs;
-        sumEsq += E_LGibbs*E_LGibbs;
-        newE += E_LGibbs;
 
-        myfile2 << scientific << E_LGibbs << endl;
+//        myfile2 << scientific << E_LGibbs << endl;
     }
 
 
 
-    vec mean_d_wf_a = sum_d_wf_a/mc;
-    vec mean_d_wf_E_a = sum_d_wf_E_a/mc;
-    vec mean_d_wf_b = sum_d_wf_b/mc;
-    vec mean_d_wf_E_b = sum_d_wf_E_b/mc;
-    mat mean_d_wf_w = sum_d_wf_w/mc;
-    mat mean_d_wf_E_w = sum_d_wf_E_w/mc;
+    vec mean_d_wf_a = sum_d_wf_a/(mc*H);
+    vec mean_d_wf_E_a = sum_d_wf_E_a/(mc*H);
+    vec mean_d_wf_b = sum_d_wf_b/(mc*H);
+    vec mean_d_wf_E_b = sum_d_wf_E_b/(mc*H);
+    mat mean_d_wf_w = sum_d_wf_w/(mc*H);
+    mat mean_d_wf_E_w = sum_d_wf_E_w/(mc*H);
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
 
-    double mean_E = sumE/(mc);
-    double mean_E_sq = sumEsq/(mc);
-    double var = (mean_E_sq - mean_E*mean_E)/(mc);
+    double mean_E = sumE/(mc*H);
+    double mean_E_sq = sumEsq/(mc*H);
+    double var = (mean_E_sq - mean_E*mean_E)/(mc*H);
 
 
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << endl; //sanity
-    myfile << scientific << sumE/mc << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
-    return sumE/mc;
+    myfile << scientific << sumE/(mc*H) << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
+    return sumE/(mc*H);
 }
 
 vec Gibbs::init_h_bool(){
@@ -141,7 +144,7 @@ double Gibbs::get_mu(int i,vec const &hid, const mat &w){
 double Gibbs::random_mu_std(double mu){
     static random_device rd;
     static mt19937_64 genMT64(rd());
-    static normal_distribution<double> gaussianRNG(mu,sigma);
+    static normal_distribution<double> gaussianRNG(mu,sigma*sigma);
     return gaussianRNG(genMT64);
 }
 

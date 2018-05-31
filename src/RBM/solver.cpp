@@ -224,7 +224,7 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
         }
         sumI += sig2*temp_I;
         sumI *= sumI;
-        sumII = sig2*temp_II;
+        sumII = sig2*sig2*temp_II;
         energysum += sumI+sumII;
     }
     double E1 = 0;
