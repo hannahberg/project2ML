@@ -17,7 +17,7 @@ Gibbs::Gibbs(double s_omega,
     Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
 {M = s_N*s_dim;}
 
-double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstream &myfile, ofstream &myfile2){
+double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstream &myfile, ofstream &myfile2, vec &hid){
     double sumE = 0;
     double sumEsq = 0;
     start=clock();
@@ -28,7 +28,7 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
 
     int j; double Pj; double E_LGibbs;
     //mat w = init_w();
-    vec hid = init_h_bool();
+
     int i;
     double accept = 0;
     double newE;
@@ -152,6 +152,8 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     cout << "All about that Gibbs..." << endl;
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
+    hiddy = init_h_bool();
+
 
 //    vec b = init_b();
 //    mat w = init_w();
@@ -163,7 +165,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     afile.open("gibbs_params_" + filename + ".dat");
     //afile2.open("gibbs_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " sigma "<< " Gibbs " << endl;
-    myfile << "  " << dim << "    " << N << " " << mc << " " << sigma  << endl;
+    myfile << "# " << dim << "    " << N << " " << mc << " " << sigma  << endl;
     myfile << "#" << endl;
     myfile << scientific << "# Theoretical Energy = " << energy << endl;
     myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << endl;
@@ -176,7 +178,8 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     double mean_EL;
     rowvec g1; rowvec g2; rowvec alphanow;
     for(int r=0;r<gdc-1;r++){
-        mean_EL = sample_gibbs(a, b, w, myfile, myfile2);
+        mean_EL = sample_gibbs(a, b, w, myfile, myfile2, hiddy);
+
 
         g1 = 0.5*getG1();
         g2 = 0.5*getG2();
