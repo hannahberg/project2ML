@@ -13,7 +13,7 @@ int main(){
     int mc = 500000;//(1048576 + 1000) / numpart; // Monte Carlo Cycles
     int howmanyDs = 2;
     double omega = 1;
-    double sig = 0.5;
+    double sig = 0.7;
     int hidden = 4;
     double dt = 0.01;
     double gamma = 0.1;

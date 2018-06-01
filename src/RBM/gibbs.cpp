@@ -198,6 +198,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     afile << a << endl;
     afile << b << endl;
     afile << w << endl;
+
     //afile2.close();
     afile.close();
 
