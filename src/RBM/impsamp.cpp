@@ -148,7 +148,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
     //afile2.open("imp_energy" + filename + ".dat");
 
     myfile << "# dim" << "  N " << "  mc  " << " dt "<< " Impsamp " << endl;
-    myfile << "  " << dim << "    " << N << " " << mc << " " << dt  << endl;
+    myfile << "# " << dim << "    " << N << " " << mc << " " << dt  << endl;
     myfile << "#" << endl;
     myfile << scientific << "# Theoretical Energy = " << energy << endl;
     myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << "     Acceptance" << endl;
