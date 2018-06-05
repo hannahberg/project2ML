@@ -343,7 +343,7 @@ vec Solver::drift(const vec &b, const vec &X, const mat &w, const vec &a){
         F(i) += - X(i)+ a(i) + drifti(b,X,w,i);
     }
 //    F = (2/(sigma*sigma))*F;
-    return halfsigma*F;
+    return 2*sig2*F;
 }
 
 
