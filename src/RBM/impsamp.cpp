@@ -83,31 +83,33 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
                 Fnew(j) = F(j);
             }
 
+            if(i > 20000){
+                bajs = E_L(a,b,w,X); // local energy
+                newE += bajs; // calculate change in energy
+                sumE += bajs;
 
-            bajs = E_L(a,b,w,X); // local energy
-            newE += bajs; // calculate change in energy
-            sumE += bajs;
+                dwfa = grad_ai(X,a);
+                sum_d_wf_a += dwfa;
+                sum_d_wf_E_a += dwfa*bajs;
 
-            dwfa = grad_ai(X,a);
-            sum_d_wf_a += dwfa;
-            sum_d_wf_E_a += dwfa*bajs;
+                dwfb = grad_bj(b,X,w);
+                sum_d_wf_b += dwfb;
+                sum_d_wf_E_b += dwfb*bajs;
 
-            dwfb = grad_bj(b,X,w);
-            sum_d_wf_b += dwfb;
-            sum_d_wf_E_b += dwfb*bajs;
+                dwfw = grad_wij(b,X,w);
+                sum_d_wf_w += dwfw;
+                sum_d_wf_E_w += dwfw*bajs;
+            }
 
-            dwfw = grad_wij(b,X,w);
-            sum_d_wf_w += dwfw;
-            sum_d_wf_E_w += dwfw*bajs;
        }
 
     myfile2 << scientific << sumE/M << endl;
     totsumE += sumE;
     totsumEsq += sumE*sumE;
     }
-    double mean_E = totsumE*Mmc;
-    double mean_E_sq = totsumEsq*Mmc;
-    double var = (mean_E_sq - mean_E*mean_E)*Mmc;
+    double mean_E = totsumE/(M*(mc-20000));//*Mmc;
+    double mean_E_sq = totsumEsq/(M*(mc-20000));//*Mmc;
+    double var = (mean_E_sq - mean_E*mean_E)/(M*(mc-20000));//*Mmc;
 
     //cout << "Impsamp finished! The end is near <3" << endl;
 
@@ -116,16 +118,17 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double totalenergy = energySum/mc;
     double energySquared = energySquaredSum/(mc * N);
     */
-    double E_ = newE/(mc*M);
-    vec mean_d_wf_a = sum_d_wf_a*Mmc;
-    vec mean_d_wf_E_a = sum_d_wf_E_a*Mmc;
-    vec mean_d_wf_b = sum_d_wf_b*Mmc;
-    vec mean_d_wf_E_b = sum_d_wf_E_b*Mmc;
-    mat mean_d_wf_w = sum_d_wf_w*Mmc;
-    mat mean_d_wf_E_w = sum_d_wf_E_w*Mmc;
+    double E_ = newE/(M*(mc-20000));//(mc*M);
+    vec mean_d_wf_a = sum_d_wf_a/(M*(mc-20000));//*Mmc;
+    vec mean_d_wf_E_a = sum_d_wf_E_a/(M*(mc-20000));//*Mmc;
+    vec mean_d_wf_b = sum_d_wf_b/(M*(mc-20000));//*Mmc;
+    vec mean_d_wf_E_b = sum_d_wf_E_b/(M*(mc-20000));//*Mmc;
+    mat mean_d_wf_w = sum_d_wf_w/(M*(mc-20000));//*Mmc;
+    mat mean_d_wf_E_w = sum_d_wf_E_w/(M*(mc-20000));//*Mmc;
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
+    cout << X << endl;
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << "Acceptance" << endl; //sanity
     myfile << scientific << E_ << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
     return E_;

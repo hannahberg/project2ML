@@ -73,15 +73,15 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
             }
 
             E_LGibbs = ELGibbs(a,b,w,X);
-            dwfa = grad_ai(X,a);
+            dwfa = 0.5*grad_ai(X,a);
             sum_d_wf_a += dwfa;
             sum_d_wf_E_a += dwfa*E_LGibbs;
 
-            dwfb = grad_bj(b,X,w);
+            dwfb = 0.5*grad_bj(b,X,w);
             sum_d_wf_b += dwfb;
             sum_d_wf_E_b += dwfb*E_LGibbs;
 
-            dwfw = grad_wij(b,X,w);
+            dwfw = 0.5*grad_wij(b,X,w);
             sum_d_wf_w += dwfw;
             sum_d_wf_E_w += dwfw*E_LGibbs;
             //cout << E_LGibbs << endl;
@@ -181,8 +181,8 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
         mean_EL = sample_gibbs(a, b, w, myfile, myfile2, hiddy);
 
 
-        g1 = 0.5*getG1();
-        g2 = 0.5*getG2();
+        g1 = getG1();
+        g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
         //afile2 << setprecision(12) << mean_EL << endl;
