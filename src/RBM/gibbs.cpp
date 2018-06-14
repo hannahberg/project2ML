@@ -72,22 +72,24 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
                 hid(j) = 1;
             }
 
+            if(k>50000){
             E_LGibbs = ELGibbs(a,b,w,X);
-            dwfa = grad_ai(X,a);
+            dwfa = 0.5*grad_ai(X,a);
             sum_d_wf_a += dwfa;
             sum_d_wf_E_a += dwfa*E_LGibbs;
 
-            dwfb = grad_bj(b,X,w);
+            dwfb = 0.5*grad_bj(b,X,w);
             sum_d_wf_b += dwfb;
             sum_d_wf_E_b += dwfb*E_LGibbs;
 
-            dwfw = grad_wij(b,X,w);
+            dwfw = 0.5*grad_wij(b,X,w);
             sum_d_wf_w += dwfw;
             sum_d_wf_E_w += dwfw*E_LGibbs;
             //cout << E_LGibbs << endl;
             sumE += E_LGibbs;
             sumEsq += E_LGibbs*E_LGibbs;
             newE += E_LGibbs;
+            }
         }
 
 
@@ -95,26 +97,26 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
 //        myfile2 << scientific << E_LGibbs << endl;
     }
 
+    double mcg = mc - 50000;
 
-
-    vec mean_d_wf_a = sum_d_wf_a/(mc*H);
-    vec mean_d_wf_E_a = sum_d_wf_E_a/(mc*H);
-    vec mean_d_wf_b = sum_d_wf_b/(mc*H);
-    vec mean_d_wf_E_b = sum_d_wf_E_b/(mc*H);
-    mat mean_d_wf_w = sum_d_wf_w/(mc*H);
-    mat mean_d_wf_E_w = sum_d_wf_E_w/(mc*H);
+    vec mean_d_wf_a = sum_d_wf_a/(mcg*H);
+    vec mean_d_wf_E_a = sum_d_wf_E_a/(mcg*H);
+    vec mean_d_wf_b = sum_d_wf_b/(mcg*H);
+    vec mean_d_wf_E_b = sum_d_wf_E_b/(mcg*H);
+    mat mean_d_wf_w = sum_d_wf_w/(mcg*H);
+    mat mean_d_wf_E_w = sum_d_wf_E_w/(mcg*H);
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
 
-    double mean_E = sumE/(mc*H);
-    double mean_E_sq = sumEsq/(mc*H);
-    double var = (mean_E_sq - mean_E*mean_E)/(mc*H);
+    double mean_E = sumE/(mcg*H);
+    double mean_E_sq = sumEsq/(mcg*H);
+    double var = (mean_E_sq - mean_E*mean_E)/(mcg*H);
 
 
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << endl; //sanity
-    myfile << scientific << sumE/(mc*H) << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
-    return sumE/(mc*H);
+    myfile << scientific << sumE/(mcg*H) << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << endl;
+    return sumE/(mcg*H);
 }
 
 vec Gibbs::init_h_bool(){
@@ -181,8 +183,8 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
         mean_EL = sample_gibbs(a, b, w, myfile, myfile2, hiddy);
 
 
-        g1 = 0.5*getG1();
-        g2 = 0.5*getG2();
+        g1 = getG1();
+        g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
         //afile2 << setprecision(12) << mean_EL << endl;
@@ -190,6 +192,7 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
         //need to reconstruct
         int k = 0;
         for(int i=0;i<M;i++){
+         a(i) = alphanow(i);
             for(int j=0;j<H;j++){
                 b(j) = alphanow(j+M);
                 w(i,j) = alphanow(M+H+k);

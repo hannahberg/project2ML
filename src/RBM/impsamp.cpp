@@ -35,7 +35,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     static normal_distribution<double> gaussianRNG(0.,0.5);
     static uniform_real_distribution<double> doubleRNG(0,1);
     double sdt = sqrt(dt);
-    double newE = 0; double sumE;
+    double sumE;
     double totsumE = 0;
     double totsumEsq = 0;
     vec X = Xin;
@@ -48,7 +48,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double D = 0.5; // diffusion coefficient
     double Ddt = D*dt;
     double Ddt05 = 0.5*D*dt;
-    double sigma_2 = 2/(sigma*sigma);
+    double sigma_2 = 2./(sigma*sigma);
     double bajs; double A;
     vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
     vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
@@ -83,9 +83,8 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
                 Fnew(j) = F(j);
             }
 
-
+            if(i>50000){
             bajs = E_L(a,b,w,X); // local energy
-            newE += bajs; // calculate change in energy
             sumE += bajs;
 
             dwfa = grad_ai(X,a);
@@ -99,9 +98,10 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
             dwfw = grad_wij(b,X,w);
             sum_d_wf_w += dwfw;
             sum_d_wf_E_w += dwfw*bajs;
+            }
        }
 
-    myfile2 << scientific << sumE/M << endl;
+    //myfile2 << scientific << sumE/M << endl;
     totsumE += sumE;
     totsumEsq += sumE*sumE;
     }
@@ -116,7 +116,7 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     double totalenergy = energySum/mc;
     double energySquared = energySquaredSum/(mc * N);
     */
-    double E_ = newE/(mc*M);
+
     vec mean_d_wf_a = sum_d_wf_a*Mmc;
     vec mean_d_wf_E_a = sum_d_wf_E_a*Mmc;
     vec mean_d_wf_b = sum_d_wf_b*Mmc;
@@ -127,8 +127,8 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     end=clock();
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << "Acceptance" << endl; //sanity
-    myfile << scientific << E_ << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
-    return E_;
+    myfile << scientific << mean_E << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
+    return mean_E;
 }
 
 rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
@@ -173,6 +173,7 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
         //need to reconstruct
         int k = 0;
         for(int i=0;i<M;i++){
+            a(i) = alphanow(i);
             for(int j=0;j<H;j++){
                 b(j) = alphanow(j+M);
                 w(i,j) = alphanow(M+H+k);

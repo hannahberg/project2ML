@@ -71,7 +71,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
             } else { // reset
                 Xnew(j) = Xflex(j);
             }
-
+            if(i>50000){
             localenergy = E_L(a,b,w,Xflex);
             sumE += localenergy; // calculate change in energy
 
@@ -86,7 +86,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
             dwfw = grad_wij(b,Xflex,w);
             sum_d_wf_w += dwfw;
             sum_d_wf_E_w += dwfw*localenergy;
-
+}
         }
         totsumE += sumE;
         totsumEsq += sumE*sumE;
@@ -127,7 +127,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
     afile.open("brute_params_" + filename + ".dat");
     //afile2.open("brute_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " rho "<< " Brute " << endl;
-    myfile << "  " << dim << "    " << N << " " << mc << " " << rho  << endl;
+    myfile << "# " << dim << "    " << N << " " << mc << " " << rho  << endl;
     myfile << "#" << endl;
     myfile << scientific << "# Theoretical Energy = " << energy << endl;
     myfile << "# Energy" <<"     " << "Variance"<<"     " << "CPU time" << "     Acceptance" << endl;
@@ -156,6 +156,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         //alphanow = alphamat.row(r+1);
         int k = 0;//need to reconstruct the vectors
         for(int i=0;i<M;i++){
+            a(i) = alphanow(i);
             for(int j=0;j<H;j++){
                 b(j) = alphanow(j+M);
                 w(i,j) = alphanow(M+H+k);
