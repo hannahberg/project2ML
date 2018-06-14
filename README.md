@@ -10,7 +10,7 @@ Project 1: Variational Monte Carlo on bosons, see https://github.com/fridafu/FYS
 - [x] c) Importance sampling
   - [x] Structure of code
   - [x] Implement gradient descent
-  - [ ] Get results
+  - [x] Get results
 - [x] d) Statistical analysis using blocking 
 - [x] e) From Metropolis to Gibbs sampling with "new" wavefunction
 - [x] f) Gibbs sampling
