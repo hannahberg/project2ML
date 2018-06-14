@@ -89,7 +89,7 @@ TEST(energy, Isimple){
     vec X = ones(numM);
     vec xa = X-a;
     double sumxa = 0;
-    double un = 0;
+//    double un = 0;
     double sum;
     double totI = 0;
     for(int m = 0; m < numM; m++){
@@ -100,7 +100,7 @@ TEST(energy, Isimple){
             for(int i = 0; i < numM; i++){
                 sum += X(i)*w(i,n)/(sig*sig);
             }
-            un = -b(n) - sum;
+//            un = -b(n) - sum;
             sumN += w(m,n)/(exp(-S1.u(b(n),X, w.col(n))) + 1);
         }
         sumxa += (1/(sig*sig))*sumN;
@@ -113,7 +113,69 @@ TEST(energy, Isimple){
     EXPECT_NEAR(totI,progI,1e-4) << "I not correct!";
 
 }
+
+TEST(energy, IIsimple){
+    double rho = 0.01;
+    int numpart = 3;
+    int mc = 100000;
+    int howmanyDs = 2;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = S1.init_a(spread);
+    vec b = S1.init_b(spread);
+    mat w = S1.init_w(spread);
+    vec X = S1.init_X();
+    double tempII;
+    double eu = 0;
+    double totII = 0;
+    for(int i = 0; i< numM;i++){
+        tempII = 0;
+        for(int j = 0; j < hidden; j++){
+            eu = exp(S1.u(b(j),X,w.col(j)));
+            tempII +=(1.0/(sig*sig*sig*sig))*w(i,j)*w(i,j)*(eu/((1+eu)*(1+eu)));
+        }
+        totII += tempII;
+    }
+
+    double progII = S1.II(b,w,X);
+    EXPECT_NEAR(totII,progII,1e-4) << "II not correct!";
+}
+
+TEST(energy,randinit){
+    double rho = 0.01;
+    int numpart = 3;
+    int mc = 100000;
+    int howmanyDs = 2;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = S1.init_a(spread);
+    vec b = S1.init_b(spread);
+    mat w = S1.init_w(spread);
+    vec X = S1.init_X();
+    double progE = S1.E_L(a,b,w,X);
+    double X2 = 0;
+    for(int m = 0; m < numM; m++){
+        X2 += X(m)*X(m);
+    }
+    double E = 0.5*(-(S1.I(a,b,w,X) - numM/(sig*sig) + S1.II(b,w,X)) + omega*omega*X2);
+    EXPECT_NEAR(E,progE,1e-5) << "energy not right";
+
+}
+
 // test of the wavefunction
+
 TEST(wavefunc,zerobias){
     double rho = 0.01;
     int numpart = 2;
@@ -274,5 +336,163 @@ TEST(u,randinit){
 }
 
 
+TEST(gibbs,wavefunc0){
+    double rho = 0.01;
+    int numpart = 2;
+    int mc = 100000;
+    int howmanyDs = 1;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = zeros(numM);
+    vec b = zeros(hidden);
+    mat w = zeros(numM,hidden);
+    vec X = zeros(numM);
+
+    double wavefunczero = exp(0);
+    double sum = 0;
+    for(int j = 0; j < hidden; j++){
+        sum += 1 + exp(0);
+    }
+    wavefunczero *= sum;
+    wavefunczero = sqrt(wavefunczero);
+    double calcwavefunc = S1.wavefunc_g(a,b,w,X);
+    ASSERT_FLOAT_EQ(wavefunczero,calcwavefunc) << "wavefunction_Gibbs not correct with zero bias";
+
+}
+
+TEST(gibbs, onebias){
+    double rho = 0.01;
+    int numpart = 2;
+    int mc = 100000;
+    int howmanyDs = 1;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = ones(numM);
+    vec b = ones(hidden);
+    mat w = ones(numM,hidden);
+    vec X = ones(numM);
+    double sum1 = 0;
+    for(int i = 0; i < numM; i++){
+        sum1 += (X(i) - a(i))*(X(i)-a(i))/(2*sig*sig);
+    }
+    double totsum = 1;
+    for(int j = 0; j < hidden; j++){
+        double sum3 = b(j);
+        for(int k = 0; k < numM; k++){
+            sum3 += X(k)*w(k,j)/(sig*sig);
+        }
+        totsum *= 1 + exp(sum3);
+    }
+    double wavefunc_an = sqrt(exp(sum1)*totsum);
+    double wavefunc_prog = S1.wavefunc_g(a,b,w,X);
+    EXPECT_NEAR(wavefunc_an,wavefunc_prog, 1e-5) << "wavefunction_Gibbs not correct with ones in bias";
+
+}
 
 
+TEST(gibbs, randbias){
+    double rho = 0.01;
+    int numpart = 2;
+    int mc = 100000;
+    int howmanyDs = 1;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = S1.init_a(spread);
+    vec b = S1.init_b(spread);
+    mat w = S1.init_w(spread);
+    vec X = S1.init_X();
+    double sum1 = 0;
+    for(int i = 0; i < numM; i++){
+        sum1 -= (X(i) - a(i))*(X(i)-a(i))/(2*sig*sig);
+    }
+    double totsum = 1;
+    for(int j = 0; j < hidden; j++){
+        totsum *= 1 + exp(S1.u(b(j),X,w.col(j)));
+//        double sum3 = b(j);
+//        for(int k = 0; k < numM; k++){
+//            sum3 += X(k)*w(k,j)/(sig*sig);
+//        }
+//        totsum *= 1 + exp(sum3);
+    }
+
+    double wavefunc_an = sqrt(exp(sum1)*totsum);
+    double wavefunc_prog = S1.wavefunc_g(a,b,w,X);
+    EXPECT_NEAR(wavefunc_an,wavefunc_prog, 1e-5) << "wavefunction_Gibbs not correct with random case";
+
+}
+
+
+
+TEST(gibbs, energy){
+    double rho = 0.01;
+    int numpart = 2;
+    int mc = 100000;
+    int howmanyDs = 2;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = S1.init_a(spread);
+    vec b = S1.init_b(spread);
+    mat w = S1.init_w(spread);
+    vec X = S1.init_X();
+    double X2 = 0;
+    double progELGibbs = S1.ELGibbs(a,b,w,X);
+    for(int m = 0; m < numM; m++){
+        X2 += X(m)*X(m);
+    }
+//    double Egib = 0.5*(-(0.25*S1.I(a,b,w,X)) - numM/(2*sig*sig) + 0.5*S1.II(b,w,X) + omega*omega*X2 );
+    double E = 0.5*(-(0.25*S1.I(a,b,w,X) - numM/(2*sig*sig) + 0.5*S1.II(b,w,X)) + omega*omega*X2);
+    EXPECT_NEAR(E,progELGibbs,1e-5) << "ELGibbs not working";
+}
+
+
+TEST(gibbs, energyzerobias){
+    double rho = 0.01;
+    int numpart = 2;
+    int mc = 100000;
+    int howmanyDs = 2;
+    double omega = 1;
+    double sig = 1;
+    double numM = howmanyDs*numpart;
+    int hidden = 2;
+    double dt = 0.01;
+    bool interactionswitch = false;
+    double spread = 0.5;
+    Solver S1(omega, rho, mc, numpart, howmanyDs, dt, sig, hidden, interactionswitch, spread);
+    vec a = zeros(numM);
+    vec b = zeros(hidden);
+    mat w = zeros(numM,hidden);
+    vec X = zeros(numM);
+    double X2 = 0;
+    double progELGibbs = S1.ELGibbs(a,b,w,X);
+    for(int m = 0; m < numM; m++){
+        X2 += X(m)*X(m);
+    }
+//    double Egib = 0.5*(-(0.25*S1.I(a,b,w,X)) - numM/(2*sig*sig) + 0.5*S1.II(b,w,X) + omega*omega*X2 );
+    double E = 0.5*(-(0.25*S1.I(a,b,w,X) - numM/(2*sig*sig) + 0.5*S1.II(b,w,X)) + omega*omega*X2);
+    cout << E << endl;
+    EXPECT_NEAR(E,progELGibbs,1e-5) << "ELGibbs not working, zerobias";
+}
