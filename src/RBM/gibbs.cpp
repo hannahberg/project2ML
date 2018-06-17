@@ -33,15 +33,7 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     double accept = 0;
     double newE;
 
-    //a = init_a();
-    //vec b = init_b()*0.001;
     vec X = init_X();
-/*
-    vec sum_d_wf(M); vec sum_d_wf_E(M);
-    vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
-    vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
-    mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
-*/
 
     vec sum_d_wf = zeros(M); vec sum_d_wf_E = zeros(M);
     vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
@@ -51,23 +43,16 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     vec dwfa; vec dwfb; mat dwfw;
     for(int k = 0; k < mc; k++){
 
-        //X = init_X_gaus();
         newE = 0;
-        //a = init_a();
-
         for(i = 0; i < M; i++){ // finding the ideal positions X(i)
             double mu = get_mu(i,hid,w);
-            //cout << "lol" << endl;
             X(i) = random_mu_std(mu + a(i));
-
         }
 
         for(j = 0; j < H; j++){
             Pj = prob(X,b(j),w.col(j));
-            //cout << "lol" << endl;
             if(doubleRNG(genMT64)<=Pj){
                 hid(j) = 0;
-//                accept += 1;
             } else {
                 hid(j) = 1;
             }
@@ -85,19 +70,14 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
             dwfw = 0.5*grad_wij(b,X,w);
             sum_d_wf_w += dwfw;
             sum_d_wf_E_w += dwfw*E_LGibbs;
-            //cout << E_LGibbs << endl;
             sumE += E_LGibbs;
             sumEsq += E_LGibbs*E_LGibbs;
             newE += E_LGibbs;
             }
         }
-
-
-
-//        myfile2 << scientific << E_LGibbs << endl;
     }
 
-    double mcg = mc - 50000;
+    double mcg = mc - 50000; //Let the system thermalize
 
     vec mean_d_wf_a = sum_d_wf_a/(mcg*H);
     vec mean_d_wf_E_a = sum_d_wf_E_a/(mcg*H);
@@ -150,16 +130,12 @@ double Gibbs::random_mu_std(double mu){
     return gaussianRNG(genMT64);
 }
 
+//The Gradient Descent method to find the minimal energy state of the system
 rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, int gdc){// gamma is learning rate <3
     cout << "All about that Gibbs..." << endl;
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
     hiddy = init_h_bool();
-
-
-//    vec b = init_b();
-//    mat w = init_w();
-//    vec a = init_a();
 
     int MHMH = M+H+M*H;
 
@@ -174,7 +150,6 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
 
     mat alphamat = zeros(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
-    //startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
@@ -187,7 +162,6 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
         g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
-        //afile2 << setprecision(12) << mean_EL << endl;
 
         //need to reconstruct
         int k = 0;
@@ -204,7 +178,6 @@ rowvec Gibbs::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma
     afile << a << endl;
     afile << b << endl;
     afile << w << endl;
-    //afile2.close();
     afile.close();
 
     return alphanow;
