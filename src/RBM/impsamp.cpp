@@ -17,7 +17,7 @@ Impsamp::Impsamp(double s_omega,
     Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
 {M = s_N*s_dim;}
 
-
+//To initialize, and then call the importance sampling solver
 void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
     vec a = init_a(spread);
     vec b = init_b(spread);
@@ -27,6 +27,7 @@ void Impsamp::go_imp(std::ofstream &myfile, ofstream &myfile2){
     langevin(a,b,w,X,myfile, myfile2);
 }
 
+//The importance sampling method
 double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin,std::ofstream &myfile, ofstream &myfile2){
 
     start=clock();
@@ -54,11 +55,6 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
     vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
-/*    vec sum_d_wf(M); vec sum_d_wf_E(M);
-    vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
-    vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
-    mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);
-    */
 
     vec dwfa; vec dwfb; mat dwfw;
     for(i = 0; i < mc; i++){
@@ -101,21 +97,12 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
             }
        }
 
-    //myfile2 << scientific << sumE/M << endl;
     totsumE += sumE;
     totsumEsq += sumE*sumE;
     }
     double mean_E = totsumE*Mmc;
     double mean_E_sq = totsumEsq*Mmc;
     double var = (mean_E_sq - mean_E*mean_E)*Mmc;
-
-    //cout << "Impsamp finished! The end is near <3" << endl;
-
-    /*
-    double energy = energySum/(mc * N);
-    double totalenergy = energySum/mc;
-    double energySquared = energySquaredSum/(mc * N);
-    */
 
     vec mean_d_wf_a = sum_d_wf_a*Mmc;
     vec mean_d_wf_E_a = sum_d_wf_E_a*Mmc;
@@ -131,21 +118,17 @@ double Impsamp::langevin(const vec &a, const vec &b, const mat &w,const vec &Xin
     return mean_E;
 }
 
+//The Gradient Descent method to find the minimal energy state of the system
 rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
     cout << "Most important sampling of all!" << endl;
 
     ofstream afile; ofstream afile2;
     double energy = energy_analytic();
 
-//    vec b = init_b();
-//    mat w = init_w();
-//    vec X = init_X();
-//    vec a = init_a();
     int MHMH = M+H+M*H;
 
     string filename ="_N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_dt"+std::to_string(dt);
     afile.open("imp_params" + filename + ".dat");
-    //afile2.open("imp_energy" + filename + ".dat");
 
     myfile << "# dim" << "  N " << "  mc  " << " dt "<< " Impsamp " << endl;
     myfile << "# " << dim << "    " << N << " " << mc << " " << dt  << endl;
@@ -156,7 +139,6 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
 
     mat alphamat(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
-//    startalpha.print();
     alphamat.row(0) = startalpha;
 
     double mean_EL;
@@ -168,7 +150,6 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
         g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r) - gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
-        //afile2 << setprecision(12) << mean_EL << endl;
 
         //need to reconstruct
         int k = 0;
