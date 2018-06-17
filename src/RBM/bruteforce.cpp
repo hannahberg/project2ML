@@ -17,7 +17,6 @@ Bruteforce::Bruteforce(double s_omega,
 :
     Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread){
     M = s_N*s_dim;
-    //Mmc = 1.0/(M*mc);
 }
 
 void Bruteforce::go_brute(std::ofstream &myfile, ofstream &myfile2){
@@ -29,15 +28,14 @@ void Bruteforce::go_brute(std::ofstream &myfile, ofstream &myfile2){
     solve(a,b,w,X,myfile, myfile2);
 }
 
+//The brute force metropolis sampling method
 double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, std::ofstream &myfile, std::ofstream &myfile2){
-
     start=clock();
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static uniform_real_distribution<double> doubleRNG(0,1);
     double sumE = 0;
 
-    //double newE = 0;
     vec Xnew = X;
 
     vec Xflex = X;
@@ -50,10 +48,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     vec sum_d_wf_b = zeros(H); vec sum_d_wf_E_b = zeros(H);
     vec sum_d_wf_a = zeros(M); vec sum_d_wf_E_a = zeros(M);
     mat sum_d_wf_w = zeros(M,H); mat sum_d_wf_E_w = zeros(M,H);
-    /*vec sum_d_wf(M); vec sum_d_wf_E(M);
-    vec sum_d_wf_b(H); vec sum_d_wf_E_b(H);
-    vec sum_d_wf_a(M); vec sum_d_wf_E_a(M);
-    mat sum_d_wf_w(M,H); mat sum_d_wf_E_w(M,H);*/
+
     vec dwfa; vec dwfb; mat dwfw;
     double totsumE = 0;
     double totsumEsq = 0;
@@ -71,6 +66,7 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
             } else { // reset
                 Xnew(j) = Xflex(j);
             }
+            //Allow system to thermalize
             if(i>50000){
             localenergy = E_L(a,b,w,Xflex);
             sumE += localenergy; // calculate change in energy
@@ -90,8 +86,6 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
         }
         totsumE += sumE;
         totsumEsq += sumE*sumE;
-        //myfile4 << scientific << bommelom/N << endl;
-        //myfile2 << scientific << sumE/M << endl;
     }
 
     double mean_E = totsumE*Mmc;
@@ -108,15 +102,14 @@ double Bruteforce::solve(const vec &a, const vec &b, const mat &w,const vec &X, 
     calcg1(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
     calcg2(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
     myfile2 << scientific << mean_E << endl;
-
-
-
+  
     end=clock();
     //myfile << "# Energy" <<"        " << "Variance" << "   " << "CPU time" << "Acceptance" << endl; //sanity
     myfile << scientific << mean_E << " " << scientific << var << " " << scientific << ((double)end-(double)start)/CLOCKS_PER_SEC << " " << scientific << accept/(mc*M) << endl;
     return mean_E;
 }
 
+//The Gradient Descent method to find the minimal energy state of the system
 rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double gamma, vec a, vec b, mat w, vec X, int gdc){
     cout << "Brute force best force!" << endl;
 
@@ -125,7 +118,6 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
   
     string filename ="N" + std::to_string(N)+ "_d" + std::to_string(dim)+ "_gam" + std::to_string(gamma) + "_H" + std::to_string(H)+"_rho"+std::to_string(rho);
     afile.open("brute_params_" + filename + ".dat");
-    //afile2.open("brute_energy_" + filename + ".dat");
     myfile << "# dim" << "  N " << "  mc  " << " rho "<< " Brute " << endl;
     myfile << "# " << dim << "    " << N << " " << mc << " " << rho  << endl;
     myfile << "#" << endl;
@@ -134,10 +126,9 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
     rowvec alpha_best;
     int MHMH = M+H +M*H;
 
-//    mat alphamat = zeros(gdc,MHMH);
     mat alphamat(gdc,MHMH);
     mat startalpha = mat(init_alpha(a,b,w));
-    //startalpha.print();
+
     alphamat.row(0) = startalpha;
 
     double mean_EL;
@@ -149,11 +140,7 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
         g2 = getG2();
         alphamat.row(r+1) = alphamat.row(r)- gamma*2*(g2 - mean_EL*g1);
         alphanow = alphamat.row(r+1);
-        //afile2 << setprecision(12) << mean_EL << endl;
-        //cout << mean_EL << endl;
 
-
-        //alphanow = alphamat.row(r+1);
         int k = 0;//need to reconstruct the vectors
         for(int i=0;i<M;i++){
             a(i) = alphanow(i);
@@ -163,11 +150,8 @@ rowvec Bruteforce::best_params(std::ofstream &myfile, ofstream &myfile2, double 
                 k++;
             }
         }
-
-            //afile << i << endl; //checking if it oscillates in the bottom
         cout << r << endl;
         }
-    //afile2.close();
     alpha_best = alphanow;
     afile <<  setprecision(12)  << a << endl;
     afile <<  setprecision(12) << b << endl;
