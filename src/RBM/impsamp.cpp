@@ -167,7 +167,6 @@ rowvec Impsamp::best_params(std::ofstream &myfile, ofstream &myfile2, double gam
     afile << b << endl;
     afile << w << endl;
     afile.close();
-    //afile2.close();
     return alphanow;
 }
 
