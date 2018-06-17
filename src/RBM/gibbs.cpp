@@ -17,6 +17,7 @@ Gibbs::Gibbs(double s_omega,
     Solver(s_omega, s_rho, s_mc, s_N, s_dim, s_dt, sig, s_H, s_interact, s_spread)
 {M = s_N*s_dim;}
 
+//The Gibbs sampling method
 double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstream &myfile, ofstream &myfile2, vec &hid){
     double sumE = 0;
     double sumEsq = 0;
