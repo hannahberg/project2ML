@@ -28,7 +28,6 @@ double Gibbs::sample_gibbs(const vec &a, const vec &b, const mat &w,std::ofstrea
     static uniform_real_distribution<double> doubleRNG(0,1);
 
     int j; double Pj; double E_LGibbs;
-    //mat w = init_w();
 
     int i;
     double accept = 0;
