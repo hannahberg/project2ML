@@ -28,12 +28,12 @@ Solver::Solver(double s_omega,
     Mmc = 1.0/(M*(mc-50000));
 }
 
+//Initializing the weights and biases in init_a, init_b, init_w
 
 vec Solver::init_a(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
-//    vec a = zeros(M);
     vec a(M);
     for(int i=0; i<M; i++){
         a(i) = gaussianRNG(genMT64);
@@ -45,7 +45,6 @@ vec Solver::init_b(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
-//    vec b = zeros(H);
     vec b(H);
     for(int j=0; j<H; j++){
         b(j) = gaussianRNG(genMT64);
@@ -57,7 +56,6 @@ mat Solver::init_w(double spread){
     static random_device rd;
     static mt19937_64 genMT64(rd());
     static normal_distribution<double> gaussianRNG(0,spread);
-//    mat w = zeros(M,H);
     mat w(M,H);
     for(int i=0; i<M; i++){
         for(int j=0; j<H; j++){
@@ -67,6 +65,7 @@ mat Solver::init_w(double spread){
     return w;
 }
 
+// Initialize particle positions
 vec Solver::init_X(){
     random_device rd;
     mt19937_64 genMT64(rd());
@@ -78,6 +77,7 @@ vec Solver::init_X(){
     return X;
 }
 
+// Initialize particle positions with a gauss distribution, if you want this
 vec Solver::init_X_gaus(){
     random_device rd;
     mt19937_64 genMT64(rd());
@@ -88,6 +88,8 @@ vec Solver::init_X_gaus(){
     }
     return X;
 }
+
+//Initializing the collected variational parameter alpha
 rowvec Solver::init_alpha(const vec &a, const vec &b, const mat &w){
     rowvec alpha = zeros<rowvec>(M+H+(M*H));
     int i; int j; int k;
@@ -107,7 +109,7 @@ rowvec Solver::init_alpha(const vec &a, const vec &b, const mat &w){
     return alpha;
 }
 
-
+//The wave function of the system
 double Solver::wavefunc(const vec &a,const vec &b,const mat &w, const vec &X){
     double g = 0;
     double f = 1;
@@ -120,10 +122,12 @@ double Solver::wavefunc(const vec &a,const vec &b,const mat &w, const vec &X){
     return exp(-g*halfsigma)*f;
 }
 
+//The wavefunction for Gibbs
 double Solver::wavefunc_g(vec a, vec b, mat w, vec X){
     return sqrt(wavefunc(a,b,w,X));
 }
 
+//Calculates u for many purposes (see report)
 double Solver::u(double bj, const vec &X, const mat &wj){
     double sum = 0;
     for(int i = 0; i < M; i++){
@@ -132,16 +136,14 @@ double Solver::u(double bj, const vec &X, const mat &wj){
     return bj + sum;
 }
 
+//If the particles interact, calculate the contribution of the interaction
 double Solver::calc_interaction(const vec &X){
     double sum = 0;
     double dr; double r2;
     for(int i = 0; i < M-dim; i+=dim){
         for(int j = i+dim; j < M; j+=dim){
-            //cout << "in ur mama" << endl;
             r2 = 0;
             for(int d = 0; d < dim; d++){
-                //cout << "i " << i + d << " " <<"j " << j+d << endl;
-//                cout << X(i+d) << " " <<X(j+d) << endl;
                 dr = X(i+d)-X(j+d);
                 dr *= dr;
                 r2 += dr;
@@ -149,22 +151,16 @@ double Solver::calc_interaction(const vec &X){
             sum += 1.0/sqrt(r2);
         }
     }
-    //sum = 1.0/(sqrt(sum));
-//    cout << "1/rij " << sum << endl;
     return sum;
-
 }
 
+//Gradients to use in the gradient descent method: grad_ai, grad_bj, grad_wij to minimize for all parameters
+
 vec Solver::grad_ai(const vec &X,const vec &a){
-//    vec grada = X - a;
-//    for(int i=0; i < M; i++){
-//        grada(i) = X(i) - a(i);
-//    }
     return (X - a)*sig2;
 }
 
 vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
-//    vec gradb = zeros(H);
     vec gradb(H);
     double uj;
     for (int j=0; j < H; j++){
@@ -174,9 +170,7 @@ vec Solver::grad_bj(const vec &b, const vec &X, const mat &w){
     return gradb;
 }
 
-
 mat Solver::grad_wij(const vec &b,const vec &X, const mat &w){
-//    mat gradw = zeros(M,H);
     mat gradw(M,H);
     double uj;
     for(int i=0; i < M; i++){
@@ -191,12 +185,11 @@ mat Solver::grad_wij(const vec &b,const vec &X, const mat &w){
 const rowvec& Solver::getG1(){
     return G1;
 }
-
 const rowvec& Solver::getG2(){
     return G2;
 }
 
-
+//Calculates the Local Energy of the system (Features I, II)
 double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
     double energysum = 0;
     double Xm2 = 0;
@@ -228,13 +221,11 @@ double Solver::E_L(const vec &a, const vec &b, const mat &w,const vec &X){
         energysum += sumI+sumII;
     }
     double E1 = 0;
+    
     if(interact){
         E1 = calc_interaction(X);
-        //cout << "interacting" << endl;
-
     }
     return -0.5*(energysum - Msig) + halfomega*Xm2+ E1;
-
 }
 
 double Solver::I(const vec &a, const vec &b, const mat &w,const vec &X){
@@ -257,9 +248,7 @@ double Solver::I(const vec &a, const vec &b, const mat &w,const vec &X){
         sumI *= sumI;
 
         energysum += sumI;
-       //cout << energysum << endl;
     }
-
     return energysum;
 }
 
@@ -286,6 +275,7 @@ double Solver::II(const vec &b, const mat &w,const vec &X){
     return energysum;
 }
 
+//Calculates the Local Energy in the Gibbs case
 double Solver::ELGibbs(const vec &a, const vec &b, const mat &w,const vec &X){
     double energysum = 0;
     double Xm2 = 0;
@@ -331,21 +321,19 @@ void Solver::calcg1(const vec &mean_d_wf_a, const vec &mean_d_wf_b,const mat &me
     G1 = init_alpha(mean_d_wf_a,mean_d_wf_b,mean_d_wf_w);
 }
 
-
 void Solver::calcg2(const vec &mean_d_wf_E_a, const vec &mean_d_wf_E_b,const mat &mean_d_wf_E_w){
     G2 = init_alpha(mean_d_wf_E_a,mean_d_wf_E_b,mean_d_wf_E_w);
 }
 
+//Calculate drift force in importance sampling
 
 vec Solver::drift(const vec &b, const vec &X, const mat &w, const vec &a){
     vec F = zeros(M);
     for(int i = 0; i < M; i++){
         F(i) += - X(i)+ a(i) + drifti(b,X,w,i);
     }
-//    F = (2/(sigma*sigma))*F;
     return 2*sig2*F;
 }
-
 
 double Solver::drifti(const vec &b, const vec &X, const mat &w, int k){
     double sum = 0;
@@ -355,6 +343,7 @@ double Solver::drifti(const vec &b, const vec &X, const mat &w, int k){
     return sum;
 }
 
+//Calculates the theoretical energy
 double Solver::energy_analytic(){
     return 0.5 * M;
 }
